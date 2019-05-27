@@ -1,7 +1,33 @@
-/* Author: Ryan Taylor Montgomery
- * Description: A Recursive Scaffolding Library for chaining generic recursive functions as lambda utilities
+/*  Author: Ryan Taylor Montgomery
+ *  Date: May 27th 2019
+ *  License: MIT License
+ *
+ *	Copyright (c) 2019 Vault Lambda LLC
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy
+ *	of this software and associated documentation files (the "Software"), to deal
+ *	in the Software without restriction, including without limitation the rights
+ *	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *	copies of the Software, and to permit persons to whom the Software is
+ *	furnished to do so, subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *	SOFTWARE.
+ * 
  */
-function initR3(){
+
+var aru=new ru();
+module.exports.ru=aru;
+
+function ru(){
 
   this.in=function(obj,key){ return key in obj };
   this.clear=function(key){ 
@@ -209,7 +235,7 @@ function initR3(){
   this.atShallowestPattern=function(data,metaPath,logic,relativity=0,cont=false){
     var	leastDepth=Infinity;
     var inputs=[];
-    r3c.atPattern(data,metaPath,function(input,r3cObj,historicalTypePath,historicalLiteralPath){
+    this.atPattern(data,metaPath,function(input,ruObj,historicalTypePath,historicalLiteralPath){
       if(historicalLiteralPath.length<leastDepth){
         leastDepth=historicalLiteralPath.length;
         inputs=[];
@@ -235,7 +261,7 @@ function initR3(){
   this.atDeepestPattern=function(data,metaPath,logic,relativity=0,cont=false){
   	var	greatestDepth=-1;
     var inputs=[];
-    r3c.atPattern(data,metaPath,function(input,r3cObj,historicalTypePath,historicalLiteralPath){
+    this.atPattern(data,metaPath,function(input,ruObj,historicalTypePath,historicalLiteralPath){
       if(historicalLiteralPath.length>greatestDepth){
         greatestDepth=historicalLiteralPath.length;
         inputs=[];
@@ -274,10 +300,7 @@ function initR3(){
    */
   this.atEvery=function(data,logic,literalPath=[],rootData=data){
     var iContinue = logic(data,logic,literalPath,rootData);
-    if(iContinue==true || iContinue==undefined || iContinue==null){
-    	
-    }
-    else{
+    if( !(iContinue==true || iContinue==undefined || iContinue==null) ){
     	return;
     }
     
@@ -458,4 +481,3 @@ function initR3(){
     return PatchDiffs;
   }
 }
-var r3= new initR3(); //init lib

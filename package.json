@@ -1,0 +1,25 @@
+{
+  "name": "ru",
+  "version": "1.0.0",
+  "description": "recursive utility library for chaining generic recursive functions as lambda utilities",
+  "main": "ru.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PredictabilityIsGood/ru.js.git"
+  },
+  "keywords": [
+    "recursive",
+    "utility",
+    "library",
+    "lambda"
+  ],
+  "author": "Ryan Taylor Montgomery",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PredictabilityIsGood/ru.js/issues"
+  },
+  "homepage": "https://github.com/PredictabilityIsGood/ru.js#readme"
+}
