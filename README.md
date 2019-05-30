@@ -1,7 +1,7 @@
 # ru.js
 A recursive library for chaining generic recursive functions as lambda utilities.
 
-###Traverse, mutate, flatten multidimensional sets with incredibly simple and short syntax
+### Traverse, mutate, flatten multidimensional sets with incredibly simple and short syntax
 ```javascript
 var matrix = [ [ [5] , [6] ] , [ [7] , [8] ] ];
 var flattened =[];
@@ -12,7 +12,7 @@ console.log(flattened);
 //  [ 5 , 6 , 7 , 8 ]
 ```
 
-###Mixin type and literal path values at any time
+### Mixin type and literal path values at any time
 ```javascript
 var data = [
     {"name":"Ryan","age":26},
@@ -26,7 +26,7 @@ console.log(names);
 //  [ "Ryan" , "Sarah" ]
 ```
 
-###Locate patterns within data sets (useful for templating data)
+### Locate patterns within data sets (useful for templating data)
 ```javascript
 var data = [
     {"name":"Ryan","age":26, "Parents":[{"name":"Dorothy"}]},
