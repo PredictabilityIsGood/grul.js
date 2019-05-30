@@ -1,7 +1,7 @@
 # ru.js
-A recursive library for chaining generic recursive functions as lambda utilities.
+A recursive library for chaining generic recursive functions as lambda utilities. 
 
-#### Traverse, mutate, flatten multidimensional
+#### Traverse, mutate, flatten multidimensional data
 ```javascript
 var matrix = [ [ [5] , [6] ] , [ [7] , [8] ] ];
 var flattened =[];
@@ -71,8 +71,16 @@ ru.atPattern(data,[Array,Object],{
 ```
 
 #### Additional Features
+* shallowest pattern searches at arbitrary depth ( atShallowestPattern )
+* deepest patterns searches at arbitrary depth ( atDeepestPattern )
+* normal recursive tree traversal with halting capabilities ( atEvery ) 
+* define patterns with object templates ( atMatching )
+* retrieve primitives ( atEnds )
 
-shallowest pattern searches at arbitrary depth
-deepest patterns searches at arbitrary depth
+#### In-Progress
+* JSON Structure/Data Differential based on [RFC 6902](https://tools.ietf.org/html/rfc6902)
 
-JSON Diff building
+#### Planned Future Changes
+* Circular Reference Halting
+* Dynamic Type Handling
+* User defined computation rules (faster large set computation)
