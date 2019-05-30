@@ -52,21 +52,21 @@ function ru(){
       .replace(/=[^,]+/g, '') 
       .split(',').filter(Boolean);
   };
-  this.executeLogic=function(logicController , location , patternIndex , aData , historicalTypePath , historicalLiteralPath ){
+  this.executeLogic=function(logicController , location , patternIndex , aData , historicalTypePath , historicalLiteralPath , initial ){
     var logic=logicController;
     if(logic.constructor===Array){
       if(logic[patternIndex].constructor===Object){
-        continueTraversal = location in logic[patternIndex] ? logic[patternIndex][location]( aData , historicalTypePath , historicalLiteralPath ):true;
+        continueTraversal = location in logic[patternIndex] ? logic[patternIndex][location]( aData , historicalTypePath , historicalLiteralPath , initial ):true;
       }
       else{
-        continueTraversal = logic[patternIndex]( aData , historicalTypePath , historicalLiteralPath );
+        continueTraversal = logic[patternIndex]( aData , historicalTypePath , historicalLiteralPath , initial );
       }
     }
     else if(logic.constructor===Object){
-      continueTraversal = location in logic ? logic[location]( aData ,  historicalTypePath , historicalLiteralPath ):true;
+      continueTraversal = location in logic ? logic[location]( aData ,  historicalTypePath , historicalLiteralPath , initial ):true;
     }
     else{
-      continueTraversal = logic( aData , historicalTypePath , historicalLiteralPath );
+      continueTraversal = logic( aData , historicalTypePath , historicalLiteralPath , initial );
     }
   };
   
@@ -136,7 +136,7 @@ function ru(){
 
     return true;
   };
-  
+
 	//Recursive Lambda's
   /* 	Function Name: this.atMeta
    *	Description: This function iterates through values which have matching literal/typepaths from the base of the object
@@ -223,7 +223,7 @@ function ru(){
           var continueTraversal;
           aData = relativity == 0 ? data : this.Pluck(rootData,historicalLiteralPath.slice(0,(historicalLiteralPath.length)+relativity));
 
-          continueTraversal = this.executeLogic(logic , "head" , i , aData , historicalTypePath , historicalLiteralPath );
+          continueTraversal = this.executeLogic(logic , "head" , i , aData , historicalTypePath , historicalLiteralPath , rootData );
 
           if(continueTraversal == false){
             return aData; //break if logic returns false
@@ -258,7 +258,7 @@ function ru(){
     if(logic.constructor === Array){
       for(var i=0;i<metaPath.length;i++){
         if(i in matched){
-          continueTraversal = this.executeLogic(logic , "tail" , i , aData , historicalTypePath , historicalLiteralPath );
+          continueTraversal = this.executeLogic(logic , "tail" , i , aData , historicalTypePath , historicalLiteralPath , rootData );
           if(continueTraversal==false){
             return aData;
           }
