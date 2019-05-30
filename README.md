@@ -84,3 +84,5 @@ ru.atPattern(data,[Array,Object],{
 * Circular Reference Halting
 * Dynamic Type Handling
 * User defined computation rules (faster large set computation)
+  * Scalable Web Workers
+  * Promise.then()
