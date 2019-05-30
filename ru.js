@@ -24,12 +24,19 @@
  * 
  */
 
-var aru=new ru();
-module.exports.ru=aru;
+var _ru=new ru();
+try{
+  module.exports.ru=_ru;
+}
+catch(exception){
+
+}
 
 function ru(){
 
-  this.in=function(obj,key){ return key in obj };
+  this.in=function(obj,key){ 
+    return key in obj 
+  };
   this.clear=function(key){ 
   	this.key = this.clone( this.defaults[key] );
   };
@@ -44,6 +51,23 @@ function ru(){
       .split('){', 1)[0].replace(/^[^(]*[(]/, '') 
       .replace(/=[^,]+/g, '') 
       .split(',').filter(Boolean);
+  };
+  this.executeLogic=function(logicController , location , patternIndex , aData , historicalTypePath , historicalLiteralPath ){
+    var logic=logicController;
+    if(logic.constructor===Array){
+      if(logic[patternIndex].constructor===Object){
+        continueTraversal = location in logic[patternIndex] ? logic[patternIndex][location]( aData , historicalTypePath , historicalLiteralPath ):true;
+      }
+      else{
+        continueTraversal = logic[patternIndex]( aData , historicalTypePath , historicalLiteralPath );
+      }
+    }
+    else if(logic.constructor===Object){
+      continueTraversal = location in logic ? logic[location]( aData ,  historicalTypePath , historicalLiteralPath ):true;
+    }
+    else{
+      continueTraversal = logic( aData , historicalTypePath , historicalLiteralPath );
+    }
   };
   
   //Recursive Helper Functions
@@ -78,7 +102,7 @@ function ru(){
    *	Description: This function checks to see if given path exists in a set
    */
   this.PathExists=function( data , bindpath , curpath=[] ){
-      var isEqual=this.arrEquals(bindpath,curpath) && bindpath.length==curpath.length;
+      var isEqual=this.ArrEquals(bindpath,curpath) && bindpath.length==curpath.length;
       if( isEqual ){
       }
       else{
@@ -112,8 +136,7 @@ function ru(){
 
     return true;
   };
-
-
+  
 	//Recursive Lambda's
   /* 	Function Name: this.atMeta
    *	Description: This function iterates through values which have matching literal/typepaths from the base of the object
@@ -155,7 +178,7 @@ function ru(){
     else{
     	//Perform Logic
       logic( data , this );
-     	this.reset(cont);
+     	//this.reset(cont);
       return this;
     }
   };
@@ -164,31 +187,53 @@ function ru(){
    *	- With cont==true this.atPattern will spawn new pattern traversals when patterns are recorgnized to ensure it matches patters overlapping patterns (Warning, may be expensive)
    */
   this.atPattern=function(data,metaPath,logic,relativity=0,cont=false,historicalTypePath=[],historicalLiteralPath=[],curMetaIndex=0,rootData=data){
-    
-    if(historicalLiteralPath.length>0){
-      if(historicalTypePath[historicalTypePath.length-1].name == metaPath[curMetaIndex].name ){
-        //increment curMetaIndex
-        curMetaIndex = this.clone(curMetaIndex)+1;
-      }
-      else if(historicalLiteralPath[historicalLiteralPath.length-1] == metaPath[curMetaIndex]){
-        //increment curMetaIndex
-        curMetaIndex = this.clone(curMetaIndex)+1;
-      }
+    var matched = {};
+    var aData;
+
+    if(metaPath[0].constructor===Array){
+      //Perform Patterns in optimized single pass
+      if(curMetaIndex.constructor===Array){}
       else{
-        //reset curMetaIndex
-        curMetaIndex = 0;
-      }
-      if(curMetaIndex == metaPath.length){
-        var continueTraversal = logic( this.Pluck(rootData,historicalLiteralPath.slice(0,(historicalLiteralPath.length)+relativity)) , this , historicalTypePath , historicalLiteralPath );
-        if(continueTraversal == false){
-        	return; //break if logic returns false
+        curMetaIndex=[];
+        for(var i=0;i<metaPath.length;i++){
+          curMetaIndex.push(0);
         }
-      	curMetaIndex = 0;
       }
     }
     else{
-    	
+      metaPath=[metaPath];
+      curMetaIndex=[0];
     }
+
+    if(historicalLiteralPath.length>0){
+      for(var i=0;i<metaPath.length;i++){
+        if(historicalTypePath[historicalTypePath.length-1].name == metaPath[i][curMetaIndex[i]].name ){
+          //increment curMetaIndex
+          curMetaIndex[i] = curMetaIndex[i]+1;
+        }
+        else if(historicalLiteralPath[historicalLiteralPath.length-1] == metaPath[i][curMetaIndex[i]]){
+          //increment curMetaIndex
+          curMetaIndex[i] = curMetaIndex[i]+1;
+        }
+        else{
+          //reset curMetaIndex
+          curMetaIndex[i] = 0;
+        }
+        if(curMetaIndex[i] == metaPath[i].length){
+          var continueTraversal;
+          aData = relativity == 0 ? data : this.Pluck(rootData,historicalLiteralPath.slice(0,(historicalLiteralPath.length)+relativity));
+
+          continueTraversal = this.executeLogic(logic , "head" , i , aData , historicalTypePath , historicalLiteralPath );
+
+          if(continueTraversal == false){
+            return aData; //break if logic returns false
+          }
+          matched[i] = true;
+          curMetaIndex[i] = 0;
+        }
+      }
+    }
+    
     
     if(data.constructor===Object){
     	Object.keys(data).forEach((key)=>{
@@ -196,10 +241,6 @@ function ru(){
         nhtpath.push(Object);
         let nhlpath=this.clone(historicalLiteralPath);
         nhlpath.push(key);
-        if( metaPath != 0 && cont == true ){
-        	//Deep Pattern Match on Spawn another atPattern at 0
-          this.atPattern(data[key],metaPath,logic,relativity,0,nhtpath,nhlpath,curMetaIndex,rootData);
-        }
       	this.atPattern(data[key],metaPath,logic,relativity,cont,nhtpath,nhlpath,curMetaIndex,rootData);
       });
     }
@@ -209,25 +250,24 @@ function ru(){
         nhtpath.push(Array);
         let nhlpath=this.clone(historicalLiteralPath);
         nhlpath.push(i);
-        if( metaPath != 0 && cont == true ){
-        	//Deep Pattern Match on Spawn another atPattern at 0
-          this.atPattern(data[i],metaPath,logic,relativity,0,nhtpath,nhlpath,curMetaIndex,rootData);
-        }
       	this.atPattern(data[i],metaPath,logic,relativity,cont,nhtpath,nhlpath,curMetaIndex,rootData);
       }
     }
-    else{
-    	//Reached the end
-      if(metaPath[curMetaIndex].constructor == Function){
-      	if(metaPath[curMetaIndex] == data.constructor){
-        	var continueTraversal = logic( this.Pluck(rootData,historicalLiteralPath.slice(0,(historicalLiteralPath.length)+relativity)) , this , historicalTypePath , historicalLiteralPath );
-          if(continueTraversal == false){
-            return; //break if logic returns false
+
+    //Tail Logic
+    if(logic.constructor === Array){
+      for(var i=0;i<metaPath.length;i++){
+        if(i in matched){
+          continueTraversal = this.executeLogic(logic , "tail" , i , aData , historicalTypePath , historicalLiteralPath );
+          if(continueTraversal==false){
+            return aData;
           }
         }
       }
     }
+    
   };
+  
   /*	Function Name: this.atShallowestPattern
    *	Description: This function iterates this.atPattern, stores the inputs with the least depth to be executed logically
    *	- With cont==true this.atPattern will spawn new pattern traversals when patterns are recorgnized to ensure it matches patters overlapping patterns (Warning, may be expensive)
@@ -235,7 +275,7 @@ function ru(){
   this.atShallowestPattern=function(data,metaPath,logic,relativity=0,cont=false){
     var	leastDepth=Infinity;
     var inputs=[];
-    this.atPattern(data,metaPath,function(input,ruObj,historicalTypePath,historicalLiteralPath){
+    this.atPattern(data,metaPath,function(input,historicalTypePath,historicalLiteralPath){
       if(historicalLiteralPath.length<leastDepth){
         leastDepth=historicalLiteralPath.length;
         inputs=[];
@@ -245,9 +285,7 @@ function ru(){
       	return false;
       }
       else{
-      
       	inputs.push(input);
-      	//Continue Executing
       }
     },relativity,cont);
     for(var i=0;i<inputs.length; i++){
@@ -261,7 +299,7 @@ function ru(){
   this.atDeepestPattern=function(data,metaPath,logic,relativity=0,cont=false){
   	var	greatestDepth=-1;
     var inputs=[];
-    this.atPattern(data,metaPath,function(input,ruObj,historicalTypePath,historicalLiteralPath){
+    this.atPattern(data,metaPath,function(input,historicalTypePath,historicalLiteralPath){
       if(historicalLiteralPath.length>greatestDepth){
         greatestDepth=historicalLiteralPath.length;
         inputs=[];
@@ -298,24 +336,27 @@ function ru(){
   /*	Function Name: this.atEvery
    * 	Description: This function runs passed logic at every potential traversal or endpoint
    */
-  this.atEvery=function(data,logic,literalPath=[],rootData=data){
-    var iContinue = logic(data,logic,literalPath,rootData);
+  this.atEvery=function(data,logic,historicalTypePath=[],historicalLiteralPath=[],rootData=data){
+    var iContinue = logic(data,logic,historicalTypePath,historicalLiteralPath,rootData);
     if( !(iContinue==true || iContinue==undefined || iContinue==null) ){
     	return;
     }
     
+    
+    var newTypePath=this.clone(historicalTypePath);
+    newTypePath.push(data.constructor);
     if(data.constructor==Array){
     	for(var i=0;i<data.length;i++){
-      	var newLitPath=this.clone(literalPath);
+      	var newLitPath=this.clone(historicalLiteralPath);
         newLitPath.push(i);
-        this.atEvery(data[i],logic,newLitPath,rootData);
+        this.atEvery(data[i],logic,newTypePath,newLitPath,rootData);
       }
     }
     else if(data.constructor==Object){
     	Object.keys(data).forEach((key)=>{
-      	var newLitPath=this.clone(literalPath);
+      	var newLitPath=this.clone(historicalLiteralPath);
         newLitPath.push(key);
-        this.atEvery(data[key],logic,newLitPath,rootData);
+        this.atEvery(data[key],logic,newTypePath,newLitPath,rootData);
       });
     }
   }
@@ -401,7 +442,7 @@ function ru(){
   /*	Function Name: this.atDepth
    *	Description: This function traverses through set, pushing all items at a dimensional depth from base into an array and returning them
    */
-  this.atDepth=function(data,depth=0,first=true){
+  this.atDepth=function(data,depth=0,logic ,historicalTypePath=[],historicalLiteralPath=[],first=true, rootData=data){
   	if(first==true){
     	this.atDepthContainer=[];
     	first=false;
@@ -411,16 +452,17 @@ function ru(){
     	depth--
     	if(data.constructor.name=="Object"){
       	Object.keys(data).forEach( (key) => {
-        	this.atDepth(data[key],depth,first);
+        	this.atDepth(data[key],depth,logic,first);
         })
       }
       else if(data.constructor.name=="Array"){
       	for(var i=0; i<data.length;i++){
-        	this.atDepth(data[i],depth,first);
+        	this.atDepth(data[i],depth,logic,first);
         }
       }
     }
     else{
+      this.logic(data,historicalTypePath,historicalLiteralPath,rootData);
     	this.atDepthContainer.push(data);      
     }
     
@@ -433,7 +475,7 @@ function ru(){
   	var PatchDiffs=[];
     if(data.constructor === Array ){
     	if(data.length>1){
-        this.atEvery(data[0],(curData,logic,literalPath,rootData)=>{
+        this.atEvery(data[0],(curData,logic,metaPath,literalPath,rootData)=>{
         	for(var i=1; i<data.length; i++){
           	//compare 0th to others
             var diffCheck = this.PathExists(data[i],literalPath);
@@ -479,5 +521,6 @@ function ru(){
     }
     
     return PatchDiffs;
-  }
+  };
+
 }

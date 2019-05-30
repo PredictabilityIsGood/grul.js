@@ -40,51 +40,79 @@ var data = [
 
 /* Example Functions */
 
-
 //Finds Pattern and iterates through all items within an array
-ru.atPattern(data,[Array],function(input){
+_ru.atPattern(data,[Array],function(input){
 	console.log(input);
 });
 
-//Finds Pattern of all items that are strings directly within an array 
-ru.atPattern(data,[Array,Object,String],function(input){
+//Finds and executes logic in the least computationally expensive way possible
+_ru.atPattern(data,[
+	[Array],
+	[Array,Object]
+],[
+	function(input){
+		console.log(input);
+	},
+	function(input){
+		console.log(input);
+	}
+]);
+
+
+//Executes logic at head and tail (Can be combined with multiple patterns)
+_ru.atPattern(data,[Array,Object],{
+	"head":function(input){
+		console.log(input);
+	},
+	"tail":function(input){
+		console.log(input);
+	}
+})
+
+//Finds Pattern of all items that are strings within objects within an array 
+_ru.atPattern(data,[Array,Object,String],function(input){
 	console.log(input);
 });
 
 
 //Retrieves all items within an array directly from the root data set
-ru.atMeta(data,[Array],function(input){
+_ru.atMeta(data,[Array],function(input){
 	console.log(input);
 });
 
-//Retrieves all items identified by an array and then a literal path "name" directly from the root data set
-ru.atMeta(data,[Array,"name"],function(input){ 
+//Retrieves all items identified by literal path "name" within an array directly from the root data set
+_ru.atMeta(data,[Array,"name"],function(input){ 
 	console.log(input);
 });
 
 
-//Finds Pattern of Arrays at the shallowest level found within the whole data set
-ru.atShallowestPattern(data,[Array],function(input){
+//Finds Pattern at the shallowest level within an Array and the whole data set.  
+_ru.atShallowestPattern(data,[Array],function(input){
 	console.log(input);
 });
 
-//Finds Pattern of Arrays at the deepest level found within the whole data set
-ru.atDeepestPattern(data,[Array],function(input){
+//Finds Pattern at the deepest level within an Array the whole data set
+_ru.atDeepestPattern(data,[Array],function(input){
 	console.log(input);
 });
 
 //Finds Pattern within the dataset and sets a datakey three paths before 
-ru.atPattern(data,["parents",0,"name"],function(input){ 
+_ru.atPattern(data,["parents",0,"name"],function(input){ 
 	input["parent-name"]=input["parents"][0]["name"];
 },-3);
 
 //Pushes depth 2 data paths into array for return (Will be extended with a lambda soon)
-console.log( ru.atDepth(data,2) );
+_ru.atDepth(data,2,function(input){
+	console.log(input);
+});
 
-//Finds differences between data sets and returns them in accordance with RFC6902 JSON Patch Format (Slightly Modified )
-console.log(	ru.atDiff(	[data[0],data[1]]	)	);	
+//Finds differences between data sets and returns them in accordance with RFC6902 JSON Patch Format (Slightly Modified)
+_ru.atDiff([
+	data[0],
+	data[1]
+]);	
 
-//Given the traversed structure of the setter, perform the function at the matching meta-path
+//Given the traversed path of the setter, perform the function at the matching meta-path
 var setter = [
   {
     "atMatchingFunction":function(input){
@@ -93,4 +121,4 @@ var setter = [
   }
 ];
 //Finds object with matching Path Traversal and executes custom function on said path
-ru.atMatching(data,setter);
+_ru.atMatching(data,setter);

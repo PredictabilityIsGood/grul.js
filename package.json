@@ -1,6 +1,6 @@
 {
   "name": "ru",
-  "version": "1.0.0",
+  "version": "0.9.0",
   "description": "recursive utility library for chaining generic recursive functions as lambda utilities",
   "main": "ru.js",
   "scripts": {
