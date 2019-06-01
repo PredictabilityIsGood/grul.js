@@ -33,7 +33,7 @@ var data = [
     {"name":"Ryan","age":26, "Parents":[{"name":"Dorothy"}]},
     {"name":"Sarah","age":27}
 ]
-ru.atPattern(data,[Array,Object],function(input){
+ru.atPattern(data,[Array],function(input){
     console.log(input.name);
     // return false to stop recursion
 });
@@ -50,7 +50,7 @@ var data = [
 ]
 ru.atPattern(data,[Array,Object],{
     "head":function(input){
-       input.name=input.name+" head mutation"
+       input=input+" head mutation"
         // return false to stop recursion
     }
     "tail":function(input,typePath,literalPath,root){

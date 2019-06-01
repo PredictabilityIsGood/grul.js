@@ -58,6 +58,7 @@ const ru = new (function(){
     else{
       continueTraversal = logic( aData , historicalTypePath , historicalLiteralPath , initial );
     }
+    return continueTraversal;
   };
   
   //Recursive Helper Functions
@@ -182,7 +183,9 @@ const ru = new (function(){
 
     if(metaPath[0].constructor===Array){
       //Perform Patterns in optimized single pass
-      if(curMetaIndex.constructor===Array){}
+      if(curMetaIndex.constructor===Array){
+        
+      }
       else{
         curMetaIndex=[];
         for(var i=0;i<metaPath.length;i++){
@@ -199,11 +202,11 @@ const ru = new (function(){
       for(var i=0;i<metaPath.length;i++){
         if(historicalTypePath[historicalTypePath.length-1].name == metaPath[i][curMetaIndex[i]].name ){
           //increment curMetaIndex
-          curMetaIndex[i] = curMetaIndex[i]+1;
+          curMetaIndex[i]++;
         }
         else if(historicalLiteralPath[historicalLiteralPath.length-1] == metaPath[i][curMetaIndex[i]]){
           //increment curMetaIndex
-          curMetaIndex[i] = curMetaIndex[i]+1;
+          curMetaIndex[i]++;
         }
         else{
           //reset curMetaIndex
@@ -231,7 +234,7 @@ const ru = new (function(){
         nhtpath.push(Object);
         let nhlpath=this.clone(historicalLiteralPath);
         nhlpath.push(key);
-      	this.atPattern(data[key],metaPath,logic,relativity,cont,nhtpath,nhlpath,curMetaIndex,rootData);
+      	this.atPattern(data[key],metaPath,logic,relativity,cont,nhtpath,nhlpath,this.clone(curMetaIndex),rootData);
       });
     }
     else if(data.constructor===Array){
@@ -240,7 +243,7 @@ const ru = new (function(){
         nhtpath.push(Array);
         let nhlpath=this.clone(historicalLiteralPath);
         nhlpath.push(i);
-      	this.atPattern(data[i],metaPath,logic,relativity,cont,nhtpath,nhlpath,curMetaIndex,rootData);
+      	this.atPattern(data[i],metaPath,logic,relativity,cont,nhtpath,nhlpath,this.clone(curMetaIndex),rootData);
       }
     }
 
