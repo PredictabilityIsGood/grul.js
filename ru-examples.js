@@ -41,12 +41,12 @@ var data = [
 /* Example Functions */
 
 //Finds Pattern and iterates through all items within an array
-_ru.atPattern(data,[Array],function(input){
+ru.atPattern(data,[Array],function(input){
 	console.log(input);
 });
 
 //Finds and executes logic in the least computationally expensive way possible
-_ru.atPattern(data,[
+ru.atPattern(data,[
 	[Array],
 	[Array,Object]
 ],[
@@ -60,7 +60,7 @@ _ru.atPattern(data,[
 
 
 //Executes logic at head and tail (Can be combined with multiple patterns)
-_ru.atPattern(data,[Array,Object],{
+ru.atPattern(data,[Array,Object],{
 	"head":function(input){
 		console.log(input);
 	},
@@ -70,44 +70,44 @@ _ru.atPattern(data,[Array,Object],{
 })
 
 //Finds Pattern of all items that are strings within objects within an array 
-_ru.atPattern(data,[Array,Object,String],function(input){
+ru.atPattern(data,[Array,Object,String],function(input){
 	console.log(input);
 });
 
 
 //Retrieves all items within an array directly from the root data set
-_ru.atMeta(data,[Array],function(input){
+ru.atMeta(data,[Array],function(input){
 	console.log(input);
 });
 
 //Retrieves all items identified by literal path "name" within an array directly from the root data set
-_ru.atMeta(data,[Array,"name"],function(input){ 
+ru.atMeta(data,[Array,"name"],function(input){ 
 	console.log(input);
 });
 
 
 //Finds Pattern at the shallowest level within an Array and the whole data set.  
-_ru.atShallowestPattern(data,[Array],function(input){
+ru.atShallowestPattern(data,[Array],function(input){
 	console.log(input);
 });
 
 //Finds Pattern at the deepest level within an Array the whole data set
-_ru.atDeepestPattern(data,[Array],function(input){
+ru.atDeepestPattern(data,[Array],function(input){
 	console.log(input);
 });
 
 //Finds Pattern within the dataset and sets a datakey three paths before 
-_ru.atPattern(data,["parents",0,"name"],function(input){ 
+ru.atPattern(data,["parents",0,"name"],function(input){ 
 	input["parent-name"]=input["parents"][0]["name"];
 },-3);
 
 //Pushes depth 2 data paths into array for return (Will be extended with a lambda soon)
-_ru.atDepth(data,2,function(input){
+ru.atDepth(data,2,function(input){
 	console.log(input);
 });
 
 //Finds differences between data sets and returns them in accordance with RFC6902 JSON Patch Format (Slightly Modified)
-_ru.atDiff([
+ru.atDiff([
 	data[0],
 	data[1]
 ]);	
@@ -121,4 +121,4 @@ var setter = [
   }
 ];
 //Finds object with matching Path Traversal and executes custom function on said path
-_ru.atMatching(data,setter);
+ru.atMatching(data,setter);

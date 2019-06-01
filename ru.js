@@ -23,17 +23,7 @@
  *	SOFTWARE.
  * 
  */
-
-var _ru=new ru();
-try{
-  module.exports.ru=_ru;
-}
-catch(exception){
-
-}
-
-function ru(){
-
+const ru = new (function(){
   this.in=function(obj,key){ 
     return key in obj 
   };
@@ -462,7 +452,7 @@ function ru(){
       }
     }
     else{
-      this.logic(data,historicalTypePath,historicalLiteralPath,rootData);
+      logic(data,historicalTypePath,historicalLiteralPath,rootData);
     	this.atDepthContainer.push(data);      
     }
     
@@ -522,5 +512,12 @@ function ru(){
     
     return PatchDiffs;
   };
+})();
 
+try{
+  module.exports.ru=ru;
+  console.log("Node Load");
+}
+catch(exception){
+  console.log("Vanilla JavaScript Load");
 }
