@@ -248,17 +248,16 @@ const ru = new (function(){
     }
 
     //Tail Logic
-    if(logic.constructor === Array){
-      for(var i=0;i<metaPath.length;i++){
-        if(i in matched){
-          continueTraversal = this.executeLogic(logic , "tail" , i , aData , historicalTypePath , historicalLiteralPath , rootData );
-          if(continueTraversal==false){
-            return aData;
-          }
+    for(var i=0;i<metaPath.length;i++){
+      if(i in matched){
+        continueTraversal = this.executeLogic(logic , "tail" , i , aData , historicalTypePath , historicalLiteralPath , rootData );
+        if(continueTraversal==false){
+          return aData;
         }
       }
     }
-    
+
+    return rootData;
   };
   
   /*	Function Name: this.atShallowestPattern

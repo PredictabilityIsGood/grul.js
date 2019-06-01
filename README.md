@@ -47,27 +47,52 @@ ru.atPattern(data,[Array],function(input){
 var data = [
     {"name":"Ryan","age":26, "Parents":[{"name":"Dorothy"}]},
     {"name":"Sarah","age":27}
-]
-ru.atPattern(data,[Array,Object],{
-    "head":function(input){
-       input=input+" head mutation"
+];
+
+//no mutation
+JSON.stringify(ru.atPattern(data,[Array,Object],{
+    "head":function(input,typePath,literalPath,root){
+       input.constructor !== Array && input.constructor !== Object ? input+=" head mutation" : input ;
         // return false to stop recursion
-    }
+    },
     "tail":function(input,typePath,literalPath,root){
-        console.log( 
+		console.log( 
             ru.Pluck( 
                 root ,
                 literalPath.slice(0,literalPath.length-1)
             )
         );
     }
-});
-// [    
-//      {"name":"Ryan","age":26, "Parents":[{"name":"Dorothy"}]},
-//      {"name":"Sarah","age":27}   
-// ]
-// [    {"name":"Dorothy"}      ]
-//
+}));
+// {name: "Ryan", age: 26, Parents: [{name: "Dorothy"}]}
+// {name: "Ryan", age: 26, Parents: [{name: "Dorothy"}]}
+// {name: "Dorothy"}
+// {name: "Ryan", age: 26, Parents: [{name: "Dorothy"}]}
+// {name: "Sarah", age: 27}
+// {name: "Sarah", age: 27}
+// "[{\"name\":\"Ryan\",\"age\":26,\"Parents\":[{\"name\":\"Dorothy\"}]},{\"name\":\"Sarah\",\"age\":27}]"
+//mutates
+JSON.stringify(ru.atPattern(data,[Array,Object],{
+    "head":function(input,typePath,literalPath,root){
+       input.constructor !== Array && input.constructor !== Object ? ru.Pluck(root,literalPath,input+" head mutation") : input;
+        // return false to stop recursion
+    },
+    "tail":function(input,typePath,literalPath,root){
+		console.log( 
+            ru.Pluck( 
+                root ,
+                literalPath.slice(0,literalPath.length-1)
+            )
+        );
+    }
+}));
+// {name: "Ryan head mutation", age: 26, Parents: [{name: "Dorothy"}]}
+// {name: "Ryan head mutation", age: "26 head mutation", Parents: [{name: "Dorothy"}]}
+// {name: "Dorothy head mutation"}
+// {name: "Ryan head mutation", age: "26 head mutation", Parents: [{name: "Dorothy head mutation"}]}
+// {name: "Sarah head mutation", age: 27}
+// {name: "Sarah head mutation", age: "27 head mutation"}
+// "[{\"name\":\"Ryan head mutation\",\"age\":\"26 head mutation\",\"Parents\":[{\"name\":\"Dorothy head mutation\"}]},{\"name\":\"Sarah head mutation\",\"age\":\"27 head mutation\"}]"
 ```
 
 #### Additional Features
