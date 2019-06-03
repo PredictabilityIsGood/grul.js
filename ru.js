@@ -163,45 +163,76 @@ const ru = new (function(){
   /* 	Function Name: this.atMeta
    *	Description: This function iterates through values which have matching literal/typepaths from the base of the object
    */
-  this.atMeta=function(data,metaPath,logic,cont=false){
-  	if(metaPath.length>0){
-      if(metaPath[0].constructor === Function ){
+  this.atMeta=function(data,metaPath,logic,relativity=0,historicalTypePath=[],historicalLiteralPath=[],cont=false,rootData=data){
+
+    if( metaPath.length==0 || metaPath[0].constructor===Array){
+      if(metaPath.length==0){
+        return rootData;
+      }
+    }
+    else{
+      metaPath=[metaPath];
+    }
+    var currentMeta = [];
+    for(var i=0;i<metaPath.length;i++){
+      if(metaPath[i].length>0){
+        currentMeta.push(metaPath[i][0]);
+        metaPath[i] = metaPath[i].slice(1,metaPath[i].length);
+      }
+      else{
+        var aData = relativity == 0 ? data : this.Pluck(rootData,historicalLiteralPath.slice(0,historicalLiteralPath.length-relativity));
+        //Perform Logic
+        this.executeLogic(logic , "head" , i , data , historicalTypePath , historicalLiteralPath , rootData );
+        metaPath.splice(i,1);
+      }
+    }
+    for(var i=0;i<metaPath.length;i++){
+      if(currentMeta[i].constructor === Function ){
         //find object types of matching .constructor
-        if(metaPath[0]===data.constructor){
-          if(metaPath[0] == Object){
+        if(currentMeta[i] === data.constructor){
+          if(currentMeta[i] === Object){
             //Iterate through object calling atMeta for each item
             Object.keys(data).forEach((key)=>{
-              this.atMeta(data[key],metaPath.slice(1,metaPath.length),logic,cont);
+              let htp = (historicalTypePath).slice(0);
+              htp.push(Object);
+              let hlp = (historicalLiteralPath).slice(0);
+              hlp.push(key);
+              this.atMeta(data[key],(metaPath).slice(0),logic,relativity,htp,hlp,cont,rootdata);
             });
           }
-          else if(metaPath[0] == Array){
+          else if(currentMeta[i] === Array){
             //Iterate through array calling atMeta for each item
             for(var i=0; i<data.length; i++){
-              this.atMeta(data[i],metaPath.slice(1,metaPath.length),logic,cont);
+              let htp = (historicalTypePath).slice(0);
+              htp.push(Array);
+              let hlp = (historicalLiteralPath).slice(0);
+              hlp.push(i);
+              this.atMeta(data[i],(metaPath).slice(0),logic,relativity,htp,hlp,cont,rootData);
             }
           }
         }
-        else if(metaPath[0]===Array || metaPath[0]===Object){
+        else if(currentMeta[i]===Array || currentMeta[i]===Object){
         }
         else{
-          this.atMeta(metaPath[0](data),metaPath.slice(1,metaPath.length),logic,cont);
+          //this.atMeta(currentMeta[i](data),metaPath,logic,relativity,historicalTypePath,historicalLiteralPath,cont,rootData);
         }
       }
-      else if(metaPath[0].constructor === String){
+      else if(currentMeta[i].constructor === String && currentMeta[i] in data){
         //find object key of string
-        this.atMeta(data[metaPath[0]],metaPath.slice(1,metaPath.length),logic,cont);
-        
+        let htp = (historicalTypePath).slice(0);
+        htp.push(String);
+        let hlp = (historicalLiteralPath).slice(0);
+        hlp.push(currentMeta[i]);
+        this.atMeta(data[currentMeta[i]],(metaPath).slice(0),logic,relativity,htp,hlp,cont,rootData);
       }
-      else if(metaPath[0].constructor === Number){
+      else if(currentMeta[i].constructor === Number && currentMeta[i] in data){
         //find array index of value
-        this.atMeta(data[metaPath[0]],metaPath.slice(1,metaPath.length),logic,cont);
+        let htp = (historicalTypePath).slice(0);
+        htp.push(Number);
+        let hlp = (historicalLiteralPath).slice(0);
+        hlp.push(currentMeta[i]);
+        this.atMeta(data[currentMeta[i]],(metaPath).slice(0),logic,relativity,htp,hlp,cont,rootData);
       }
-		}
-    else{
-    	//Perform Logic
-      logic( data , this );
-     	//this.reset(cont);
-      return this;
     }
   };
   /*	Function Name: this.atPattern
