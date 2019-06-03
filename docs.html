@@ -1,0 +1,170 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="introduction to ru.js recursive utility library for js">
+    <meta name="author" content="Ryan Taylor Montgomery, and other contributors">
+    <title>ru.js - The Recursive Utility Library</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script src="ru.js"></script>
+    <script src="ru-examples.js"></script>
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <!-- <link href="jumbotron.css" rel="stylesheet"> -->
+  </head>
+<body id="doc-start">
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+  <a class="navbar-brand" href="index.html">ru.js</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="docs.html">Documentation</a>
+      </li>
+      <li class="nav-item d-none">
+        <a class="nav-link" href="#">Donate</a>
+      </li>
+      <li class="nav-item dropdown d-none">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About Us</a>
+        <div class="dropdown-menu" aria-labelledby="dropdown01">
+          <a class="dropdown-item" href="#">Team</a>
+          <a class="dropdown-item" href="#">Ideal</a>
+          <a class="dropdown-item" href="#">Maintainers</a>
+        </div>
+      </li>
+    </ul>
+    <form class="d-none form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+<main role="main" style="margin-top:56px;">
+  <div class="container-fluid pt-4">
+    <div class="row">
+      <div class="col-3 mr-0 pr-0">
+        <div id="doc-search" class="position-fixed">
+            <h5 class="text-muted text-center">API Calls</h5>
+            <div class="position-relative" style="z-index:999999;">
+                <input id="doc-search-input" class="form-control " type="text" placeholder="search" style="border-radius:0 !important;"/>
+            </div>
+            <div id="doc-search-list-wrapper" class="position-relative">
+                <ul id="doc-search-list" class="nav flex-column"></ul>
+            </div>
+        </div>
+      </div>
+      <div class="col-9">
+        <h5 class="text-muted text-center">API Details</h5>
+        <div id="doc-detail" class="list-group"></div>
+      </div>
+    </div>
+    
+  </div>
+  <script>
+    var docEl = document.getElementById("doc-detail");
+    var searchEl = document.getElementById("doc-search-list");
+    var docs = ru.docs();
+    var searchables = [];
+    var lastElement = "doc-start";
+    docs.forEach((doc)=>{
+    
+        var searchItem = document.createElement("li");
+        searchItem.setAttribute("class","nav-item w-100");
+        var searchRef = document.createElement("a");
+        searchRef.setAttribute("class","nav-link ru-search text-muted");
+        searchRef.setAttribute("href","#"+lastElement);
+        searchRef.appendChild(document.createTextNode(doc.name));
+        searchItem.appendChild(searchRef);
+        searchEl.appendChild(searchItem);
+        searchables.push({
+            "name":doc.name,
+            "element":searchItem
+        });
+        $(searchItem).on("mouseenter",function(){
+            $("#"+doc.name).addClass("text-white active")
+            $("#"+doc.name).find(".sub-text").removeClass("text-muted");
+        });
+        $(searchItem).on("mouseleave",function(){
+            $("#"+doc.name).removeClass("text-white active")
+            $("#"+doc.name).find(".sub-text").addClass("text-muted");
+        });
+
+
+        var docItem = document.createElement("a");
+        docItem.setAttribute("id",doc.name);
+        docItem.setAttribute("class","list-group-item list-group-noborder list-group-item-action flex-column align-items-start");
+        docItem.innerHTML = `<div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">ru.`+doc.name+`</h5>
+            <small class="">`+doc.details.version+`</small>
+        </div>
+        <p class="mb-1">`+doc.details.description+`</p>
+        <small class="sub-text text-muted">`+doc.details.status+`</small>`;
+        docEl.appendChild(docItem);
+        lastElement = doc.name;
+    });
+
+    $("#doc-search-input").on("keyup",function(event){
+        var el = this;
+        searchables.forEach((searchable)=>{
+            if($(el).val()==""){
+                $(searchable.element).removeClass("d-none");
+            }
+            else{
+                if(searchable.name.toLowerCase().indexOf($(el).val().toLowerCase()) >= 0 ){
+                    $(searchable.element).removeClass("d-none");
+                }
+                else{
+                    $(searchable.element).addClass("d-none");
+                }
+            }
+        });
+    });
+
+    $(window).on("resize",function(event){
+        var height = window.innerHeight - ( $("#doc-search").offset().top - $("nav").offset().top ) ;
+        $("#doc-search").attr("style","max-height:"+(height-50)+"px;min-width:"+$("#doc-search").parent().width()+"px;max-width:"+$("#doc-search").parent().width()+"px;");
+        $("#doc-search-list-wrapper").attr("style","overflow:auto;max-height:"+(height-134)+"px;")
+    })
+    $(window).trigger("resize");
+  </script>
+  <style>
+      #doc-search-list-wrapper{
+        background-color:white;
+        border:1px solid rgba(0,0,0,.125);
+        border-top:0;
+        box-shadow:1px 1px 2px lightgray;
+      }
+      .ru-search:hover{
+        background-color:silver;
+        color:white;
+      }
+      .list-group-noborder{
+          border-radius:0 !important;
+      }
+      .list-group{
+          box-shadow:1px 1px 3px lightgray
+      }
+  </style>
+</main>
+<footer class="container mt-4">
+  <p class=" text-center text-muted">&copy; Vault Lambda, 2018-2019</p>
+</footer>
+</body>
+</html>

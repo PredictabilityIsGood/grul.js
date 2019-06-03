@@ -24,15 +24,44 @@
  * 
  */
 const ru = new (function(){
-  this.in=function(obj,key){ 
-    return key in obj 
+  /*  Function Name: this.docs
+   *  Description: Retrieves api information from source
+   */
+  this.docs=function(){
+    let Utilities=Object.keys(this);
+    let source=this.constructor.toString();
+    const regex = /\/\*?(?:\t|\ |\r|\n)*?Function\ Name:(?:.|\r|\n)*?this\.([a-zA-Z0-9]*)(?:.|\r|\n)*?Description:((?:.|\r|\n)*?)\*\//gmi;
+    let m;
+    let funcDetail = {};
+    while ((m = regex.exec(source)) !== null) {
+        // This is necessary to avoid infinite loops with zero-width matches
+        if (m.index === regex.lastIndex) {
+            regex.lastIndex++;
+        }
+        
+        // The result can be accessed through the `m`-variable.
+        funcDetail[m[1]]={
+          "description":m[2]
+        };
+    }
+    let docs = Utilities.map(function(key){
+      return { 
+        name:key, 
+        args:ru.funcArgs(ru[key]),
+        details:(key in funcDetail ? funcDetail[key] : { "description":"No description provided"} )
+      };
+    });
+    return docs;
   };
-  this.clear=function(key){ 
-  	this.key = this.clone( this.defaults[key] );
-  };
+  /*  Function Name: this.clone
+   *  Description: Clones data (breaking attachment to existing datasets)
+   */
   this.clone=function(obj){
   	return JSON.parse(JSON.stringify(obj));
   };
+  /*  Function Name: this.funcArgs
+   *  Description: Retrieves functions arguments given a function definition
+   */
   this.funcArgs=function(func) {  
     return (func + '')
       .replace(/[/][/].*$/mg,'')
@@ -42,6 +71,9 @@ const ru = new (function(){
       .replace(/=[^,]+/g, '') 
       .split(',').filter(Boolean);
   };
+  /*  Function Name: this.executeLogic
+   *  Description: Executes logic of lambda depending on passed structure (currently only utilized by atPattern)
+   */
   this.executeLogic=function(logicController , location , patternIndex , aData , historicalTypePath , historicalLiteralPath , initial ){
     var logic=logicController;
     if(logic.constructor===Array){
@@ -60,7 +92,6 @@ const ru = new (function(){
     }
     return continueTraversal;
   };
-  
   //Recursive Helper Functions
   /*	Function Name: this.Pluck
    *	Description: This function traverses data given a path (array of literal traversals in order)
