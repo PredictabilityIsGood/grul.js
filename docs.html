@@ -5,10 +5,10 @@
     <meta name="description" content="introduction to ru.js recursive utility library for js">
     <meta name="author" content="Ryan Taylor Montgomery, and other contributors">
     <title>ru.js - The Recursive Utility Library</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script src="ru.js"></script>
     <script src="ru-examples.js"></script>
     <style>
@@ -36,7 +36,7 @@
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="docs.html">Documentation</a>
+        <a class="nav-link active" href="docs.html">Documentation</a>
       </li>
       <li class="nav-item d-none">
         <a class="nav-link" href="#">Donate</a>
@@ -112,10 +112,10 @@
         docItem.setAttribute("class","list-group-item list-group-noborder list-group-item-action flex-column align-items-start");
         docItem.innerHTML = `<div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1">ru.`+doc.name+`</h5>
-            <small class="">`+doc.details.version+`</small>
+            <small class="d-none">`+doc.details.version+`</small>
         </div>
         <p class="mb-1">`+doc.details.description+`</p>
-        <small class="sub-text text-muted">`+doc.details.status+`</small>`;
+        <small class="d-none sub-text text-muted">`+doc.details.status+`</small>`;
         docEl.appendChild(docItem);
         lastElement = doc.name;
     });
