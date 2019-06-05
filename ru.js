@@ -93,49 +93,44 @@ const ru = new (function(){
     return continueTraversal;
   };
   //Recursive Helper Functions
-  /*	Function Name: this.Pluck
+  /*	Function Name: this.pluck
    *	Description: This function traverses data given a path (array of literal traversals in order)
    */
-  this.Pluck=function(data,path,set=null){
+  this.pluck=function(data,path,set=null){
   	if(path.length>1){
-        return this.Pluck( data[path[0]] , path.slice(1,path.length) , set );
+      return this.pluck( data[path[0]] , path.slice(1,path.length) , set );
     }
     else{
         if(path.length==0){
-            return data;
+          return data;
         }
         else{
             if(set==null){
-                if(data instanceof HTMLElement){
-                    return data.getAttribute(path[0]);
-                }
-                else{
-                    return data[path[0]];
-                }
+              return data[path[0]];
             }
             else{
-                data[path[0]]=set;
-                return data[path[0]];
+              data[path[0]]=set;
+              return data[path[0]];
             }
         }
     }
   };
-  /* 	Function Name: this.PathExists
+  /* 	Function Name: this.pathExists
    *	Description: This function checks to see if given path exists in a set
    */
-  this.PathExists=function( data , bindpath , curpath=[] ){
-      var isEqual=this.ArrEquals(bindpath,curpath) && bindpath.length==curpath.length;
+  this.pathExists=function( data , bindpath , curpath=[] ){
+      var isEqual=this.arrEquals(bindpath,curpath) && bindpath.length==curpath.length;
       if( isEqual ){
       }
       else{
           curpath.push(bindpath[curpath.length]);
       }
       try{
-          if(this.Pluck(data,curpath) !== undefined ){
+          if(this.pluck(data,curpath) !== undefined ){
           		if(isEqual==true){
               	return true;
               }
-              return this.PathExists(data , bindpath , curpath);
+              return this.pathExists(data , bindpath , curpath);
           }
           else{
               return bindpath.slice(curpath.length-1,bindpath.length);
@@ -145,10 +140,10 @@ const ru = new (function(){
           return bindpath.slice(curpath.length-1,bindpath.length);
       }
   };
-  /*	Function Name: this.ArrEquals
+  /*	Function Name: this.arrEquals
    *	Description: This function iterates through array elements to check equality
    */
-  this.ArrEquals=function(arr1, arr2) {
+  this.arrEquals=function(arr1, arr2) {
     if(arr1.length !== arr2.length)
         return false;
     for(var i = arr1.length; i--;) {
@@ -180,7 +175,7 @@ const ru = new (function(){
         metaPath[i] = metaPath[i].slice(1,metaPath[i].length);
       }
       else{
-        var aData = relativity == 0 ? data : this.Pluck(rootData,historicalLiteralPath.slice(0,historicalLiteralPath.length-relativity));
+        var aData = relativity == 0 ? data : this.pluck(rootData,historicalLiteralPath.slice(0,historicalLiteralPath.length-relativity));
         //Perform Logic
         this.executeLogic(logic , "head" , i , data , historicalTypePath , historicalLiteralPath , rootData );
         metaPath.splice(i,1);
@@ -276,7 +271,7 @@ const ru = new (function(){
         }
         if(curMetaIndex[i] == metaPath[i].length){
           var continueTraversal;
-          aData = relativity == 0 ? data : this.Pluck(rootData,historicalLiteralPath.slice(0,(historicalLiteralPath.length)+relativity));
+          aData = relativity == 0 ? data : this.pluck(rootData,historicalLiteralPath.slice(0,(historicalLiteralPath.length)+relativity));
 
           continueTraversal = this.executeLogic(logic , "head" , i , aData , historicalTypePath , historicalLiteralPath , rootData );
 
@@ -438,11 +433,11 @@ const ru = new (function(){
    *	Description: This function traverses through set, determining if same path exists in data, and executes the associated path function "atMatchingFunction" or the sequence
    */
   this.atMatching=function(data,set,metaPath=[],literalPath=[]){
-  	var curObj=this.Pluck(set,metaPath);
+  	var curObj=this.pluck(set,metaPath);
     var curData;
     var exists=false;
     try{
-     curData=this.Pluck(data,metaPath);
+     curData=this.pluck(data,metaPath);
      exists=true;
     }
     catch(exception){
@@ -474,13 +469,13 @@ const ru = new (function(){
     else if(curObj.constructor.name=="Function"){
     	if(metaPath[metaPath.length-1]=="atMatchingFunction"){
       	//Perform Logic at Path of data object
-        curObj( this.Pluck(data,literalPath.slice(0,literalPath.length-1)) , this )
+        curObj( this.pluck(data,literalPath.slice(0,literalPath.length-1)) , this )
       }
     }
     else if(curObj.constructor.name=="String"){
     	if(metaPath[metaPath.length-1]=="atMatchingFunction"){
       	//Perform Logic at Path of data object
-        window[curObj]( this.Pluck(data,literalPath.slice(0,literalPath.length-1)) , this )
+        window[curObj]( this.pluck(data,literalPath.slice(0,literalPath.length-1)) , this )
       }
       else if(exists){
       	curData+=curObj
@@ -532,10 +527,10 @@ const ru = new (function(){
         this.atEvery(data[0],(curData,logic,metaPath,literalPath,rootData)=>{
         	for(var i=1; i<data.length; i++){
           	//compare 0th to others
-            var diffCheck = this.PathExists(data[i],literalPath);
+            var diffCheck = this.pathExists(data[i],literalPath);
             if(diffCheck==true && diffCheck.constructor===Boolean){
             	if(curData.constructor!= Object && curData.constructor !=Array){
-                var compareSetVal=this.Pluck(data[i],literalPath);
+                var compareSetVal=this.pluck(data[i],literalPath);
                 if(curData == compareSetVal){
                   //set equivalent
                 }
@@ -579,9 +574,33 @@ const ru = new (function(){
 })();
 
 try{
-  module.exports.ru=ru;
+  module.exports=ru;
   console.log("Node Load");
 }
 catch(exception){
+  ru.pluck=function(data,path,set=null){
+  	if(path.length>1){
+        return this.pluck( data[path[0]] , path.slice(1,path.length) , set );
+    }
+    else{
+        if(path.length==0){
+            return data;
+        }
+        else{
+            if(set==null){
+                if(data instanceof HTMLElement){
+                    return data.getAttribute(path[0]);
+                }
+                else{
+                    return data[path[0]];
+                }
+            }
+            else{
+                data[path[0]]=set;
+                return data[path[0]];
+            }
+        }
+    }
+  };
   console.log("Vanilla JavaScript Load");
 }
