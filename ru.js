@@ -120,8 +120,7 @@ const ru = new (function(){
    */
   this.pathExists=function( data , bindpath , curpath=[] ){
       var isEqual=this.arrEquals(bindpath,curpath) && bindpath.length==curpath.length;
-      if( isEqual ){
-      }
+      if( isEqual ){}
       else{
           curpath.push(bindpath[curpath.length]);
       }
@@ -150,7 +149,6 @@ const ru = new (function(){
         if(arr1[i] !== arr2[i])
             return false;
     }
-
     return true;
   };
 
@@ -159,7 +157,6 @@ const ru = new (function(){
    *	Description: This function iterates through values which have matching literal/typepaths from the base of the object
    */
   this.atMeta=function(data,metaPath,logic,relativity=0,historicalTypePath=[],historicalLiteralPath=[],cont=false,rootData=data){
-
     if( metaPath.length==0 || metaPath[0].constructor===Array){
       if(metaPath.length==0){
         return rootData;
@@ -229,6 +226,7 @@ const ru = new (function(){
         this.atMeta(data[currentMeta[i]],(metaPath).slice(0),logic,relativity,htp,hlp,cont,rootData);
       }
     }
+    return rootData;
   };
   /*	Function Name: this.atPattern
    *	Description: This function iterates through values which have matching literal/typepaths throughout the entirety of an object 
@@ -240,8 +238,7 @@ const ru = new (function(){
 
     if(metaPath[0].constructor===Array){
       //Perform Patterns in optimized single pass
-      if(curMetaIndex.constructor===Array){
-        
+      if(curMetaIndex.constructor===Array){  
       }
       else{
         curMetaIndex=[];
@@ -272,9 +269,7 @@ const ru = new (function(){
         if(curMetaIndex[i] == metaPath[i].length){
           var continueTraversal;
           aData = relativity == 0 ? data : this.pluck(rootData,historicalLiteralPath.slice(0,(historicalLiteralPath.length)+relativity));
-
           continueTraversal = this.executeLogic(logic , "head" , i , aData , historicalTypePath , historicalLiteralPath , rootData );
-
           if(continueTraversal == false){
             return aData; //break if logic returns false
           }
@@ -283,8 +278,6 @@ const ru = new (function(){
         }
       }
     }
-    
-    
     if(data.constructor===Object){
     	Object.keys(data).forEach((key)=>{
       	var nhtpath=historicalTypePath.slice(0,historicalTypePath.length);
@@ -313,10 +306,8 @@ const ru = new (function(){
         }
       }
     }
-
-    return rootData;
+    return data;
   };
-  
   /*	Function Name: this.atShallowestPattern
    *	Description: This function iterates this.atPattern, stores the inputs with the least depth to be executed logically
    *	- With cont==true this.atPattern will spawn new pattern traversals when patterns are recorgnized to ensure it matches patters overlapping patterns (Warning, may be expensive)
@@ -340,6 +331,7 @@ const ru = new (function(){
     for(var i=0;i<inputs.length; i++){
     	logic(inputs[i]);
     }
+    return data;
   };
   /*	Function Name: this.atDeepestPattern
    *	Description: This function iterates this.atPattern, stores the inputs with most depth to be executed logically - (Returns false within .atPattern where depth is greater than)
@@ -358,6 +350,7 @@ const ru = new (function(){
     for(var i=0;i<inputs.length; i++){
     	logic(inputs[i]);
     }
+    return data;
   };
   /* 	Function Name: this.atEnds
    *	Description: This function iterates through the primitive ends of objects
@@ -381,6 +374,7 @@ const ru = new (function(){
     else{
     	logic(data);
     }
+    return data;
   };
   /*	Function Name: this.atEvery
    * 	Description: This function runs passed logic at every potential traversal or endpoint
@@ -390,8 +384,6 @@ const ru = new (function(){
     if( !(iContinue==true || iContinue==undefined || iContinue==null) ){
     	return;
     }
-    
-    
     var newTypePath=this.clone(historicalTypePath);
     newTypePath.push(data.constructor);
     if(data.constructor==Array){
@@ -408,6 +400,7 @@ const ru = new (function(){
         this.atEvery(data[key],logic,newTypePath,newLitPath,rootData);
       });
     }
+    return data;
   }
   /*	Function Name: this.atMetaEnds
    * 	Description: This function runs this.atMeta, and then performs logic at the ends of the object returned to it by this.atMeta
@@ -441,10 +434,8 @@ const ru = new (function(){
      exists=true;
     }
     catch(exception){
-    	//no such path exists
       exists=false;
     }
-    
   	if(curObj.constructor.name=="Object"){
     	Object.keys(curObj).forEach( (key) => {
       	var nMetaPath = this.clone(metaPath);
@@ -455,7 +446,7 @@ const ru = new (function(){
       	
       });
     }
-    else if(curObj.constructor.name=="Array" && exists){
+    else if(curObj.constructor.name===Array && exists){
     	for(var i=0; i<curObj.length;i++){
       	var nMetaPath = this.clone(metaPath);
         nMetaPath.push(i);
@@ -466,13 +457,13 @@ const ru = new (function(){
         }        
       }
     }
-    else if(curObj.constructor.name=="Function"){
+    else if(curObj.constructor===Function){
     	if(metaPath[metaPath.length-1]=="atMatchingFunction"){
       	//Perform Logic at Path of data object
         curObj( this.pluck(data,literalPath.slice(0,literalPath.length-1)) , this )
       }
     }
-    else if(curObj.constructor.name=="String"){
+    else if(curObj.constructor.name===String){
     	if(metaPath[metaPath.length-1]=="atMatchingFunction"){
       	//Perform Logic at Path of data object
         window[curObj]( this.pluck(data,literalPath.slice(0,literalPath.length-1)) , this )
@@ -481,7 +472,7 @@ const ru = new (function(){
       	curData+=curObj
       }
     }
-    else if(curObj.constructor.name==="Number" && exists){
+    else if(curObj.constructor===Number && exists){
     	//Do an Equivalence Modifier
       if(curData.constructor.name == curObj.constructor.name){
       	curData+=curObj;
@@ -580,26 +571,26 @@ try{
 catch(exception){
   ru.pluck=function(data,path,set=null){
   	if(path.length>1){
-        return this.pluck( data[path[0]] , path.slice(1,path.length) , set );
+      return this.pluck( data[path[0]] , path.slice(1,path.length) , set );
     }
     else{
-        if(path.length==0){
-            return data;
+      if(path.length==0){
+        return data;
+      }
+      else{
+        if(set==null){
+          if(data instanceof HTMLElement){
+            return data.getAttribute(path[0]);
+          }
+          else{
+            return data[path[0]];
+          }
         }
         else{
-            if(set==null){
-                if(data instanceof HTMLElement){
-                    return data.getAttribute(path[0]);
-                }
-                else{
-                    return data[path[0]];
-                }
-            }
-            else{
-                data[path[0]]=set;
-                return data[path[0]];
-            }
+          data[path[0]]=set;
+          return data[path[0]];
         }
+      }
     }
   };
   console.log("Vanilla JavaScript Load");
