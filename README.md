@@ -1,7 +1,14 @@
 # ru.js
 A recursive library for chaining generic recursive functions as lambda utilities. 
 
+[npmjs](https://www.npmjs.com/package/grul)
+
 #### Node Start
+install grul with NPM.
+```
+npm install grul
+```
+require grull to any conveniently named non conflicting reference. examples here will be referenced via "ru".
 ```javascript
 //library is currently hesitantly named grul. Name may change in the future
 const ru=require("grul")
@@ -9,7 +16,7 @@ const ru=require("grul")
 
 #### CDN Start
 ```javascript
-//plain javascript loads directly to const variable called ru
+//plain javascript loads directly to a reference named ru
 <script type="text/javascript" src="ru.js"></script>
 ```
 
@@ -62,20 +69,22 @@ var data = [
 ];
 
 //no mutation
-JSON.stringify(ru.atPattern(data,[Array,Object],{
-    "head":function(input,typePath,literalPath,root){
-       input.constructor !== Array && input.constructor !== Object ? input+=" head mutation" : input ;
-        // return false to stop recursion
-    },
-    "tail":function(input,typePath,literalPath,root){
-		console.log( 
-            ru.pluck( 
-                root ,
-                literalPath.slice(0,literalPath.length-1)
-            )
-        );
-    }
-}));
+JSON.stringify(
+    ru.atPattern(data,[Array,Object],{
+        "head":function(input,typePath,literalPath,root){
+        input.constructor !== Array && input.constructor !== Object ? input+=" head mutation" : input ;
+            // return false to stop recursion
+        },
+        "tail":function(input,typePath,literalPath,root){
+            console.log( 
+                ru.pluck( 
+                    root ,
+                    literalPath.slice(0,literalPath.length-1)
+                )
+            );
+        }
+    })
+);
 // {name: "Ryan", age: 26, Parents: [{name: "Dorothy"}]}
 // {name: "Ryan", age: 26, Parents: [{name: "Dorothy"}]}
 // {name: "Dorothy"}
@@ -84,20 +93,22 @@ JSON.stringify(ru.atPattern(data,[Array,Object],{
 // {name: "Sarah", age: 27}
 // "[{\"name\":\"Ryan\",\"age\":26,\"Parents\":[{\"name\":\"Dorothy\"}]},{\"name\":\"Sarah\",\"age\":27}]"
 //mutates
-JSON.stringify(ru.atPattern(data,[Array,Object],{
-    "head":function(input,typePath,literalPath,root){
-       input.constructor !== Array && input.constructor !== Object ? ru.pluck(root,literalPath,input+" head mutation") : input;
-        // return false to stop recursion
-    },
-    "tail":function(input,typePath,literalPath,root){
-		console.log( 
-            ru.pluck( 
-                root ,
-                literalPath.slice(0,literalPath.length-1)
-            )
-        );
-    }
-}));
+JSON.stringify(
+    ru.atPattern(data,[Array,Object],{
+        "head":function(input,typePath,literalPath,root){
+        input.constructor !== Array && input.constructor !== Object ? ru.pluck(root,literalPath,input+" head mutation") : input;
+            // return false to stop recursion
+        },
+        "tail":function(input,typePath,literalPath,root){
+            console.log( 
+                ru.pluck( 
+                    root ,
+                    literalPath.slice(0,literalPath.length-1)
+                )
+            );
+        }
+    })
+);
 // {name: "Ryan head mutation", age: 26, Parents: [{name: "Dorothy"}]}
 // {name: "Ryan head mutation", age: "26 head mutation", Parents: [{name: "Dorothy"}]}
 // {name: "Dorothy head mutation"}
