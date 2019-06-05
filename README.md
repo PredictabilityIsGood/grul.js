@@ -1,6 +1,18 @@
 # ru.js
 A recursive library for chaining generic recursive functions as lambda utilities. 
 
+#### Node Start
+```javascript
+//library is currently hesitantly named grul. Name may change in the future
+const ru=require("grul").ru
+```
+
+#### CDN Start
+```javascript
+//plain javascript loads directly to const variable called ru
+<script type="text/javascript" src="ru.js"></script>
+```
+
 #### Traverse, mutate, flatten multidimensional data
 ```javascript
 var matrix = [ [ [5] , [6] ] , [ [7] , [8] ] ];
@@ -57,7 +69,7 @@ JSON.stringify(ru.atPattern(data,[Array,Object],{
     },
     "tail":function(input,typePath,literalPath,root){
 		console.log( 
-            ru.Pluck( 
+            ru.pluck( 
                 root ,
                 literalPath.slice(0,literalPath.length-1)
             )
@@ -74,12 +86,12 @@ JSON.stringify(ru.atPattern(data,[Array,Object],{
 //mutates
 JSON.stringify(ru.atPattern(data,[Array,Object],{
     "head":function(input,typePath,literalPath,root){
-       input.constructor !== Array && input.constructor !== Object ? ru.Pluck(root,literalPath,input+" head mutation") : input;
+       input.constructor !== Array && input.constructor !== Object ? ru.pluck(root,literalPath,input+" head mutation") : input;
         // return false to stop recursion
     },
     "tail":function(input,typePath,literalPath,root){
 		console.log( 
-            ru.Pluck( 
+            ru.pluck( 
                 root ,
                 literalPath.slice(0,literalPath.length-1)
             )
