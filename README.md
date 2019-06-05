@@ -4,7 +4,7 @@ A recursive library for chaining generic recursive functions as lambda utilities
 #### Node Start
 ```javascript
 //library is currently hesitantly named grul. Name may change in the future
-const ru=require("grul").ru
+const ru=require("grul")
 ```
 
 #### CDN Start
