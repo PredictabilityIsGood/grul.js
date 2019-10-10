@@ -1,4 +1,4 @@
-# ru.js
+# grul.js
 A recursive library for chaining generic recursive functions as lambda utilities. 
 
 [npmjs](https://www.npmjs.com/package/grul)
@@ -11,20 +11,20 @@ npm install grul
 require grull to any conveniently named non conflicting reference. examples here will be referenced via "ru".
 ```javascript
 //library is currently hesitantly named grul. Name may change in the future
-const ru=require("grul")
+const grul=require("grul")
 ```
 
 #### CDN Start
 ```javascript
 //plain javascript loads directly to a reference named ru
-<script type="text/javascript" src="ru.js"></script>
+<script type="text/javascript" src="grul.js"></script>
 ```
 
 #### Traverse, mutate, flatten multidimensional data
 ```javascript
 var matrix = [ [ [5] , [6] ] , [ [7] , [8] ] ];
 var flattened =[];
-ru.atMeta(matrix,[Array,Array,Array],function(input){
+grul.atMeta(matrix,[Array,Array,Array],function(input){
     flattened.push(input);
 });
 console.log(flattened);
@@ -38,7 +38,7 @@ var data = [
     {"name":"Sarah","age":27}
 ];
 var names =[];
-ru.atMeta(data,[Array,"name"],function(input){
+grul.atMeta(data,[Array,"name"],function(input){
     names.push(input);
 }); 
 console.log(names);
@@ -52,7 +52,7 @@ var data = [
     {"name":"Ryan","age":26, "Parents":[{"name":"Dorothy"}]},
     {"name":"Sarah","age":27}
 ]
-ru.atPattern(data,[Array],function(input){
+grul.atPattern(data,[Array],function(input){
     console.log(input.name);
     // return false to stop recursion
 });
@@ -70,14 +70,14 @@ var data = [
 
 //no mutation
 JSON.stringify(
-    ru.atPattern(data,[Array,Object],{
+    grul.atPattern(data,[Array,Object],{
         "head":function(input,typePath,literalPath,root){
         input.constructor !== Array && input.constructor !== Object ? input+=" head mutation" : input ;
             // return false to stop recursion
         },
         "tail":function(input,typePath,literalPath,root){
             console.log( 
-                ru.pluck( 
+                grul.pluck( 
                     root ,
                     literalPath.slice(0,literalPath.length-1)
                 )
@@ -94,14 +94,14 @@ JSON.stringify(
 // "[{\"name\":\"Ryan\",\"age\":26,\"Parents\":[{\"name\":\"Dorothy\"}]},{\"name\":\"Sarah\",\"age\":27}]"
 //mutates
 JSON.stringify(
-    ru.atPattern(data,[Array,Object],{
+    grul.atPattern(data,[Array,Object],{
         "head":function(input,typePath,literalPath,root){
-        input.constructor !== Array && input.constructor !== Object ? ru.pluck(root,literalPath,input+" head mutation") : input;
+        input.constructor !== Array && input.constructor !== Object ? grul.pluck(root,literalPath,input+" head mutation") : input;
             // return false to stop recursion
         },
         "tail":function(input,typePath,literalPath,root){
             console.log( 
-                ru.pluck( 
+                grul.pluck( 
                     root ,
                     literalPath.slice(0,literalPath.length-1)
                 )
