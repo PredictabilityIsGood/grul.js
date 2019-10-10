@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PredictabilityIsGood/ru.js.git"
+    "url": "git+https://github.com/PredictabilityIsGood/grul.js.git"
   },
   "keywords": [
     "recursive",
@@ -19,7 +19,7 @@
   "author": "Ryan Taylor Montgomery",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/PredictabilityIsGood/ru.js/issues"
+    "url": "https://github.com/PredictabilityIsGood/grul.js/issues"
   },
-  "homepage": "https://github.com/PredictabilityIsGood/ru.js#readme"
+  "homepage": "https://github.com/PredictabilityIsGood/grul.js#readme"
 }
