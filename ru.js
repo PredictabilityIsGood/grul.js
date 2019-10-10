@@ -23,7 +23,7 @@
  *	SOFTWARE.
  * 
  */
-const ru = new (function(){
+const grul = new (function(){
   /*  Function Name: this.docs
    *  Description: Retrieves api information from source
    */
@@ -189,7 +189,7 @@ const ru = new (function(){
               htp.push(Object);
               let hlp = (historicalLiteralPath).slice(0);
               hlp.push(key);
-              this.atMeta(data[key],(metaPath).slice(0),logic,relativity,htp,hlp,cont,rootdata);
+              this.atMeta(data[key],(metaPath).slice(0),logic,relativity,htp,hlp,cont,rootData);
             });
           }
           else if(currentMeta[i] === Array){
@@ -277,6 +277,9 @@ const ru = new (function(){
           curMetaIndex[i] = 0;
         }
       }
+    }
+    if(data==null){
+      return;
     }
     if(data.constructor===Object){
     	Object.keys(data).forEach((key)=>{
@@ -380,7 +383,7 @@ const ru = new (function(){
    * 	Description: This function runs passed logic at every potential traversal or endpoint
    */
   this.atEvery=function(data,logic,historicalTypePath=[],historicalLiteralPath=[],rootData=data){
-    var iContinue = logic(data,logic,historicalTypePath,historicalLiteralPath,rootData);
+    var iContinue = logic(data,historicalTypePath,historicalLiteralPath,rootData);
     if( !(iContinue==true || iContinue==undefined || iContinue==null) ){
     	return;
     }
@@ -565,11 +568,11 @@ const ru = new (function(){
 })();
 
 try{
-  module.exports=ru;
+  module.exports=grul;
   console.log("Node Load");
 }
 catch(exception){
-  ru.pluck=function(data,path,set=null){
+  grul.pluck=function(data,path,set=null){
   	if(path.length>1){
       return this.pluck( data[path[0]] , path.slice(1,path.length) , set );
     }
