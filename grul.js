@@ -28,6 +28,7 @@ const grul = new (function(){
    *  Description: Retrieves api information from source
    */
   this.docs=function(){
+    let grulref=this;
     let Utilities=Object.keys(this);
     let source=this.constructor.toString();
     const regex = /\/\*?(?:\t|\ |\r|\n)*?Function\ Name:(?:.|\r|\n)*?this\.([a-zA-Z0-9]*)(?:.|\r|\n)*?Description:((?:.|\r|\n)*?)\*\//gmi;
@@ -47,7 +48,7 @@ const grul = new (function(){
     let docs = Utilities.map(function(key){
       return { 
         name:key, 
-        args:ru.funcArgs(ru[key]),
+        args:grulref.funcArgs(grul[key]),
         details:(key in funcDetail ? funcDetail[key] : { "description":"No description provided"} )
       };
     });
