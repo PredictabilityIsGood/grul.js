@@ -59,10 +59,10 @@
 <main role="main" style="margin-top:56px;">
   <div class="container-fluid pt-4">
     <div class="row">
-      <div class="col-3 mr-0 pr-0">
-        <div id="doc-search" class="position-fixed">
+      <div class="col-lg-2 col-md-3 col-sm-4 mr-0 pr-0">
+        <div id="doc-search" >
             <h5 class="text-muted text-center">API Calls</h5>
-            <div class="position-relative" style="z-index:999999;">
+            <div class="position-relative" style="z-index:1000;">
                 <input id="doc-search-input" class="form-control " type="text" placeholder="search" style="border-radius:0 !important;"/>
             </div>
             <div id="doc-search-list-wrapper" class="position-relative">
@@ -70,7 +70,7 @@
             </div>
         </div>
       </div>
-      <div class="col-9">
+      <div class="col-lg-10 col-md-9 col-sm-8">
         <h5 class="text-muted text-center">API Details</h5>
         <div id="doc-detail" class="list-group"></div>
       </div>
@@ -147,9 +147,7 @@
   <style>
       #doc-search-list-wrapper{
         background-color:white;
-        border:1px solid rgba(0,0,0,.125);
         border-top:0;
-        box-shadow:1px 1px 2px lightgray;
       }
       .ru-search:hover{
         background-color:silver;
