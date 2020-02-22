@@ -349,10 +349,14 @@ const grul = new (function(){
         greatestDepth=historicalLiteralPath.length;
         inputs=[];
       }
-      inputs.push(input);
+      inputs.push({
+        data:input,
+        historicalTypePath:historicalTypePath,
+        historicalLiteralPath:historicalLiteralPath
+      });
     },relativity,cont);
     for(var i=0;i<inputs.length; i++){
-    	logic(inputs[i]);
+    	logic(inputs[i].data,inputs[i].historicalTypePath,inputs[i].historicalLiteralPath);
     }
     return data;
   };

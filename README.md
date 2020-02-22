@@ -8,7 +8,7 @@ install grul with NPM.
 ```
 npm install grul
 ```
-require grull to any conveniently named non conflicting reference. examples here will be referenced via "ru".
+require grull to any conveniently named non conflicting reference. examples here are referenced via "grul".
 ```javascript
 //library is currently hesitantly named grul. Name may change in the future
 const grul=require("grul")
