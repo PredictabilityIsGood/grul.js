@@ -10,13 +10,11 @@ npm install grul
 ```
 require grull to any conveniently named non conflicting reference. examples here are referenced via "grul".
 ```javascript
-//library is currently hesitantly named grul. Name may change in the future
 const grul=require("grul")
 ```
 
 #### CDN Start
 ```javascript
-//plain javascript loads directly to a reference named ru
 <script type="text/javascript" src="grul.js"></script>
 ```
 
