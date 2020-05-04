@@ -118,6 +118,61 @@ JSON.stringify(
 // "[{\"name\":\"Ryan head mutation\",\"age\":\"26 head mutation\",\"Parents\":[{\"name\":\"Dorothy head mutation\"}]},{\"name\":\"Sarah head mutation\",\"age\":\"27 head mutation\"}]"
 ```
 
+#### Hierarchically Group datasets with declarative templates
+```javascript
+grul.atHierarchy([   
+    {EntityId:1,Action:"Transformed",Status:"Completed",Date:"2019-01-03"},
+    {EntityId:1,Action:"Disappeared",Status:"Completed",Date:"2019-01-04"},
+    {EntityId:2,Action:"Disappeared",Status:"In-Progress",Date:"2019-01-04"}    
+],
+[{
+    name: {
+        "head": (row, typePath, literalPath, template) => row.Action
+    },
+    value: {
+        "tail": (rows, typePath, literalPath, template) => rows.length
+    },
+    records:{
+        "tail": (rows, typePath, literalPath, template ) => rows
+    },
+    children: [{
+        name: {
+            "head": (row, typePath, literalPath, template) => row.Status
+        },
+        value: {
+            "tail": (rows, typePath, literalPath, template) => rows.length
+        },
+        records: {
+            "tail": (rows, typePath, literalPath, template ) => rows
+        }
+    }]
+}])
+/* Hierarchical output as processed by declarative template
+    [{
+        name:"Transformed",
+        value:1,
+        records:[{EntityId:1,Action:"Transformed",Status:"Completed",Date:"2019-01-03"}],
+        children:[  {   name:"Completed",
+                        value:1,
+                        records:[{EntityId:1,Action:"Transformed",Status:"Completed",Date:"2019-01-03"}]
+                    }]
+    },{
+        name:"Disappeared",
+        value:2,
+        records:[   {EntityId:1,Action:"Disappeared",Status:"Completed",Date:"2019-01-04"},
+                    {EntityId:2,Action:"Disappeared",Status:"In-Progress",Date:"2019-01-04"}    ],
+        children:[  {   name:"Completed",
+                        value:1,
+                        records:[{EntityId:1,Action:"Disappeared",Status:"Completed",Date:"2019-01-04"}]
+                    },
+                    {   name:"In-Progress",
+                        value:1,
+                        records:[{EntityId:2,Action:"Disappeared",Status:"In-Progress",Date:"2019-01-04"}]
+                    }],
+    }]
+ */
+```
+
 #### Additional Features
 * shallowest pattern searches at arbitrary depth ( atShallowestPattern )
 * deepest patterns searches at arbitrary depth ( atDeepestPattern )
