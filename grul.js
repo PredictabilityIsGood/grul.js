@@ -521,26 +521,32 @@ const grul = new (function () {
   /* 	Function Name: this.atEnds
    *	Description: This function iterates through the primitive ends of objects
    */
-  this.atEnds = function (data, logic) {
-      if (data.constructor === Object) {
-          Object.keys(data).forEach((key) => {
-              this.atEnds(data[key], logic);
-          })
-      }
-      else if (data.constructor === Array) {
-          for (var i = 0; i < data.length; i++) {
-              this.atEnds(data[i], logic);
-          }
-      }
-      else if (data.constructor === Function) {
-          if (this.funcArgs(data).length == 0) {
-              this.atEnds(data(), logic)
-          }
-      }
-      else {
-          logic(data);
-      }
-      return data;
+  this.atEnds = function (data, logic, historicalTypePath = [], historicalLiteralPath = []) {
+    if (data.constructor === Object) {
+        Object.keys(data).forEach((key) => {
+              let ntp = historicalTypePath.concat([Object]);
+              let nlp = historicalLiteralPath.concat([key]);
+              this.atEnds(data[key], logic, ntp, nlp);
+        })
+    }
+    else if (data.constructor === Array) {
+        for (var i = 0; i < data.length; i++) {
+              let ntp = historicalTypePath.concat([Array]);
+              let nlp = historicalLiteralPath.concat([key]);
+              this.atEnds(data[i], logic, ntp, nlp);
+        }
+    }
+    else if (data.constructor === Function) {
+        if (this.funcArgs(data).length == 0) {
+          let ntp = historicalTypePath.concat([Function]);
+          let nlp = historicalLiteralPath.concat(data);
+          this.atEnds(data(logic,ntp,nlp), logic, ntp, nlp)
+        }
+    }
+    else {
+        logic(data,historicalTypePath,historicalLiteralPath);
+    }
+    return data;
   };
   /*	Function Name: this.atEvery
    * 	Description: This function runs passed logic at every potential traversal or endpoint
