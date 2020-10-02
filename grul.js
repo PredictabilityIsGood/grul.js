@@ -532,7 +532,7 @@ const grul = new (function () {
     else if (data.constructor === Array) {
         for (var i = 0; i < data.length; i++) {
               let ntp = historicalTypePath.concat([Array]);
-              let nlp = historicalLiteralPath.concat([key]);
+              let nlp = historicalLiteralPath.concat([i]);
               this.atEnds(data[i], logic, ntp, nlp);
         }
     }
