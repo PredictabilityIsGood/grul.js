@@ -171,6 +171,72 @@ grul.atHierarchy([
  */
 ```
 
+#### Intelligently Segment and Prune Multi-Dimensional Recursive Patterns
+```javascript
+grul.atSegment({"Users":[{
+        "name":"Ryan",
+        "Projects":[{
+            "name":"Payment Gateway",
+            "duration":4
+        },{
+            "name":"Event Registration",
+            "duration":4
+        }],
+        "Transactions":[5,6,7,8]
+        
+    },{
+        "name":"Justin",
+        "Projects":[{
+            "name":"Customer Relations Management",
+            "duration":4
+        },{
+            "name":"Alumni Management Services",
+            "duration":4
+        }],
+        "Transactions":[1,2,3,4]
+    }]
+},
+{
+    "include":[["Users"]],
+    "exclude":[["Transactions"]]
+},
+(data,htp,hlp,hop)=>{},{
+    depth:1,
+    lag:0
+}).map(data=>data.data)[0];
+/* Expected Pruned output
+ [
+  {
+    "name": "Ryan",
+    "Projects": [
+      {
+        "name": "Payment Gateway",
+        "duration": 4
+      },
+      {
+        "name": "Event Registration",
+        "duration": 4
+      }
+    ]
+  },
+  {
+    "name": "Justin",
+    "Projects": [
+      {
+        "name": "Customer Relations Management",
+        "duration": 4
+      },
+      {
+        "name": "Alumni Management Services",
+        "duration": 4
+      }
+    ]
+  }
+]
+ 
+ */
+```
+
 #### Additional Features
 * shallowest pattern searches at arbitrary depth ( atShallowestPattern )
 * deepest patterns searches at arbitrary depth ( atDeepestPattern )
@@ -180,9 +246,10 @@ grul.atHierarchy([
 
 #### In-Progress
 * JSON Structure/Data Differential based on [RFC 6902](https://tools.ietf.org/html/rfc6902)
+* Circular Reference Halting
 
 #### Planned Future Changes
-* Circular Reference Halting
+
 * Dynamic Type Handling
 * User defined computation rules (faster large set computation)
   * Scalable Web Workers
