@@ -103,11 +103,11 @@ const grul = new (function () {
             return this.pluck(data[path[0]], path.slice(1), set);
         }
         else {
-            if (path.length == 0) {
+            if (path.length === 0) {
                 return data;
             }
             else {
-                if (set == null) {
+                if (set === null) {
                     return data[path[0]];
                 }
                 else {
@@ -121,14 +121,14 @@ const grul = new (function () {
      *	Description: This function checks to see if given path exists in a set
      */
     this.pathExists = function (data, bindpath, curpath = []) {
-        var isEqual = this.arrEquals(bindpath, curpath) && bindpath.length == curpath.length;
+        var isEqual = this.arrEquals(bindpath, curpath) && bindpath.length === curpath.length;
         if (isEqual) { }
         else {
             curpath.push(bindpath[curpath.length]);
         }
         try {
             if (this.pluck(data, curpath) !== undefined) {
-                if (isEqual == true) {
+                if (isEqual === true) {
                     return true;
                 }
                 return this.pathExists(data, bindpath, curpath);
@@ -145,7 +145,7 @@ const grul = new (function () {
      *   Description: This function constructs a blank incoming typed item
      */
     this.scaffold = function (input) {
-        if (input.constructor == Object) {
+        if (input.constructor === Object) {
             return {};
         }
         else if (input.constructor === Array) {
@@ -154,15 +154,14 @@ const grul = new (function () {
         else {
             return input;
         }
-    }
+    };
     /*  Function Name: this.isPrimitive
      *  Description: This function determines whether or not the argument is a primitive type in javascript
      */
     this.isPrimitive = function (arg) {
         var type = typeof arg;
-        return arg == null || (type != "object" && type != "function");
+        return arg === null || (type != "object" && type != "function");
     }
-
     /*	Function Name: this.arrEquals
      *	Description: This function iterates through array elements to check equality
      */
@@ -183,7 +182,6 @@ const grul = new (function () {
 
         }
     }
-
     //Recursive Lambda's
     /*  Function Name: this.atHierarchy
      *  Description: This function traverses any static or dynamic template hierarchy executing any head, tail logic to restructure a 2 dimensional JSON set
@@ -311,7 +309,7 @@ const grul = new (function () {
             })
         }
         return root;
-    }
+    };
     /*  Function Name: this.atStructure
      *  Description: This function traverses any multidimensional set and modifies the existing path structure (metaPath) to the specified desired path structure
      */
@@ -321,7 +319,7 @@ const grul = new (function () {
          * newMetaPath => ["children",Object]
          * keyPaths => []
          */
-    }
+    };
     /*  Function Name: this.atSegment
      *  Description: This function traverses a multidimensional set for the existence of the metaPath starting from the historicalLiteralPath, until it finds the
      *               next existence of metaPath, or the ends are primitive and returns a shallow copy
@@ -413,95 +411,17 @@ const grul = new (function () {
             logic(clone,include.historicalTypePath,include.historicalLiteralPath,include.historicalObjectPath,data);
         });
         return segments;
-    }
-
+    };
     /* 	Function Name: this.atMeta
      *	Description: This function iterates through values which have matching literal/typepaths from the base of the object
      */
     this.atMeta = function (data, metaPath, logic, relativity = 0, historicalTypePath = [], historicalLiteralPath = [], historicalObjectPath = [], rootData = data) {
-        if (metaPath.length == 0 || metaPath[0].constructor === Array) {
-            if (metaPath.length == 0) {
-                return rootData;
-            }
-        }
-        else {
-            metaPath = [metaPath];
-        }
-        var currentMeta = [];
-        var nhop = historicalObjectPath;
-        for (var i = 0; i < metaPath.length; i++) {
-            if (metaPath[i].length > 0) {
-                currentMeta.push(metaPath[i][0]);
-                metaPath[i] = metaPath[i].slice(1);
-            }
-            else {
-                var aData = relativity == 0 ? data : this.pluck(rootData, historicalLiteralPath.slice(0, historicalLiteralPath.length - relativity));
-                nhop = nhop.concat([{ data: aData }]);
-                let hopIndex = nhop.length - 1;
-                if (hopIndex > 0) {
-                    nhop[hopIndex].previous = () => {
-                        return nhop[hopIndex - 1];
-                    };
-                    nhop[hopIndex].previous().next = () => {
-                        return nhop[hopIndex];
-                    };
-                }
-                this.executeLogic(logic, "head", i, data, historicalTypePath, historicalLiteralPath, nhop, rootData);
-                metaPath.splice(i, 1);
-            }
-        }
-        for (var i = 0; i < metaPath.length; i++) {
-            if (currentMeta[i].constructor === Function) {
-                //find object types of matching .constructor
-                if (currentMeta[i] === data.constructor) {
-                    if (currentMeta[i] === Object) {
-                        //Iterate through object calling atMeta for each item
-                        Object.keys(data).forEach((key) => {
-                            let nhtp = (historicalTypePath).slice(0);
-                            nhtp.push(Object);
-                            let nhlp = (historicalLiteralPath).slice(0);
-                            nhlp.push(key);
-                            this.atMeta(data[key], (metaPath).slice(0), logic, relativity, nhtp, nhlp, nhop, rootData);
-                        });
-                    }
-                    else if (currentMeta[i] === Array) {
-                        //Iterate through array calling atMeta for each item
-                        for (var i = 0; i < data.length; i++) {
-                            let nhtp = (historicalTypePath).slice(0);
-                            nhtp.push(Array);
-                            let nhlp = (historicalLiteralPath).slice(0);
-                            nhlp.push(i);
-                            this.atMeta(data[i], (metaPath).slice(0), logic, relativity, nhtp, nhlp, nhop, rootData);
-                        }
-                    }
-                }
-                else if (currentMeta[i] === Array || currentMeta[i] === Object) {
-                }
-            }
-            else if (currentMeta[i].constructor === String && currentMeta[i] in data) {
-                //find object key of string
-                let nhtp = (historicalTypePath).slice(0);
-                nhtp.push(String);
-                let nhlp = (historicalLiteralPath).slice(0);
-                nhlp.push(currentMeta[i]);
-                this.atMeta(data[currentMeta[i]], (metaPath).slice(0), logic, relativity, nhtp, nhlp, nhop, rootData);
-            }
-            else if (currentMeta[i].constructor === Number && currentMeta[i] in data) {
-                //find array index of value
-                let nhtp = (historicalTypePath).slice(0);
-                nhtp.push(Number);
-                let nhlp = (historicalLiteralPath).slice(0);
-                nhlp.push(currentMeta[i]);
-                this.atMeta(data[currentMeta[i]], (metaPath).slice(0), logic, relativity, nhtp, nhlp, nhop, rootData);
-            }
-        }
-        return rootData;
+        return this.atPattern(data, metaPath, { "head":logic }, relativity, historicalTypePath, historicalLiteralPath, null, data, true);
     };
     /*	Function Name: this.atPattern
      *	Description: This function iterates through values which have matching literal/typepaths throughout the entirety of an object 
-     *	- With cont==true this.atPattern will spawn new pattern traversals when patterns are recognized to ensure it matches patters overlapping patterns (Warning, may be expensive)
      */
-    this.atPattern = function (data, metaPath, logic, relativity = 0, historicalTypePath = [], historicalLiteralPath = [], curMeta, rootData = data) {
+    this.atPattern = function (data, metaPath, logic, relativity = 0, historicalTypePath = [], historicalLiteralPath = [], curMeta, rootData = data, direct=false) {
         let matched = {};   
         let aData;
         let metaTemplate = {
@@ -524,23 +444,26 @@ const grul = new (function () {
         }
 
         if (historicalLiteralPath.length > 0) {
+            let matchExists = false;
             for (var i = 0; i < metaPath.length; i++) {
                 newMeta[i]={
                     matchCount:this.clone(curMeta[i].matchCount),
                     hop:curMeta[i].hop
                 };
-                if ( metaPath[i][newMeta[i].matchCount] !== undefined && historicalTypePath[historicalTypePath.length - 1].name == metaPath[i][newMeta[i].matchCount].name) {
+                if ( metaPath[i][newMeta[i].matchCount] !== undefined && historicalTypePath[historicalTypePath.length - 1].name === metaPath[i][newMeta[i].matchCount].name) {
                     newMeta[i].matchCount++;
+                    matchExists = true;
                 }
-                else if (metaPath[i][newMeta[i].matchCount] !== undefined && historicalLiteralPath[historicalLiteralPath.length - 1] == metaPath[i][newMeta[i].matchCount]) {
+                else if (metaPath[i][newMeta[i].matchCount] !== undefined && historicalLiteralPath[historicalLiteralPath.length - 1] === metaPath[i][newMeta[i].matchCount]) {
                     newMeta[i].matchCount++;
+                    matchExists = true;
                 }
                 else {
                     newMeta[i].matchCount = 0;
                 }
-                if (newMeta[i].matchCount == metaPath[i].length) {
+                if (newMeta[i].matchCount === metaPath[i].length) {
                     var continueTraversal;
-                    aData = relativity == 0 ? data : this.pluck(rootData, historicalLiteralPath.slice(0, (historicalLiteralPath.length) + relativity));
+                    aData = relativity === 0 ? data : this.pluck(rootData, historicalLiteralPath.slice(0, (historicalLiteralPath.length) + relativity));
                     newMeta[i].hop = newMeta[i].hop.concat([{ data: aData }]);
                     let frozenHopIndex = newMeta[i].hop.length - 1;
                     let frozenMetaIndex = this.clone(i);
@@ -554,47 +477,49 @@ const grul = new (function () {
                     }
                     continueTraversal = this.executeLogic(logic, "head", i, aData, historicalTypePath, historicalLiteralPath, newMeta[i].hop, rootData);
                     matched[i] = aData;
-                    if (continueTraversal == false) {
+                    if (continueTraversal === false) {
                         return aData;
                     }
                     newMeta[i].matchCount = 0;
                 }
             }
+            if(direct && !matchExists){
+                return false;
+            }
         }
-        if (data == null) {
+        if (data === null) {
             return;
         }
-        if (data.constructor === Object) {
-            Object.keys(data).forEach((key) => {
-                var nhtpath = historicalTypePath.slice(0);
-                nhtpath.push(Object);
-                let nhlpath = this.clone(historicalLiteralPath);
-                nhlpath.push(key);
-                this.atPattern(data[key], metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData);
-            });
-        }
-        else if (data.constructor === Array) {
+
+        
+        var nhtpath = historicalTypePath.slice(0);
+        nhtpath.push(data.constructor);
+        if (data.constructor === Array) {
             for (var i = 0; i < data.length; i++) {
-                var nhtpath = historicalTypePath.slice(0);
-                nhtpath.push(Array);
                 let nhlpath = this.clone(historicalLiteralPath);
                 nhlpath.push(i);
-                this.atPattern(data[i], metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData);
+                this.atPattern(data[i], metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
             }
+        }
+        else if (data.constructor === Object || (typeof data == 'object' && data !== null) ) {
+            Object.keys(data).forEach((key) => {
+                let nhlpath = this.clone(historicalLiteralPath);
+                nhlpath.push(key);
+                this.atPattern(data[key], metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
+            });
         }
 
         //Tail Logic
         for (var i = 0; i < metaPath.length; i++) {
             if (i in matched) {
                 continueTraversal = this.executeLogic(logic, "tail", i, aData, historicalTypePath, historicalLiteralPath, newMeta[i].hop, rootData);
-                if (continueTraversal == false) {
+                if (continueTraversal === false) {
                     return aData;
                 }
             }
         }
         return data;
     };
-
     /*	Function Name: this.atShallowestPattern
      *	Description: This function iterates this.atPattern, stores the inputs with the least depth to be executed logically
      *	- With cont==true this.atPattern will spawn new pattern traversals when patterns are recorgnized to ensure it matches patters overlapping patterns (Warning, may be expensive)
@@ -666,7 +591,7 @@ const grul = new (function () {
             }
         }
         else if (data.constructor === Function) {
-            if (this.funcArgs(data).length == 0) {
+            if (this.funcArgs(data).length === 0) {
                 let ntp = historicalTypePath.concat([Function]);
                 let nlp = historicalLiteralPath.concat(data);
                 this.atEnds(data(logic, ntp, nlp), logic, ntp, nlp)
@@ -682,19 +607,19 @@ const grul = new (function () {
      */
     this.atEvery = function (data, logic, historicalTypePath = [], historicalLiteralPath = [], rootData = data) {
         var iContinue = logic(data, historicalTypePath, historicalLiteralPath, rootData);
-        if (!(iContinue == true || iContinue == undefined || iContinue == null)) {
+        if (!(iContinue === true || iContinue === undefined || iContinue === null)) {
             return;
         }
         var newTypePath = this.clone(historicalTypePath);
         newTypePath.push(data.constructor);
-        if (data.constructor == Array) {
+        if (data.constructor === Array) {
             for (var i = 0; i < data.length; i++) {
                 var newLitPath = this.clone(historicalLiteralPath);
                 newLitPath.push(i);
                 this.atEvery(data[i], logic, newTypePath, newLitPath, rootData);
             }
         }
-        else if (data.constructor == Object) {
+        else if (data.constructor === Object || (typeof data == 'object')) {
             Object.keys(data).forEach((key) => {
                 var newLitPath = this.clone(historicalLiteralPath);
                 newLitPath.push(key);
@@ -702,14 +627,16 @@ const grul = new (function () {
             });
         }
         return data;
-    }
+    };
     /*	Function Name: this.atMetaEnds
      * 	Description: This function runs this.atMeta, and then performs logic at the ends of the object returned to it by this.atMeta
      */
     this.atMetaEnds = function (data, metaPath, logic) {
         var recursiveRef = this;
-        recursiveRef.atMeta(data, metaPath, function (input) {
-            recursiveRef.atEnds(input, logic);
+        recursiveRef.atMeta(data, metaPath, {
+            "head":function (input) {
+                recursiveRef.atEnds(input, logic);
+            }
         });
         return data;
     };
@@ -737,7 +664,7 @@ const grul = new (function () {
         catch (exception) {
             exists = false;
         }
-        if (curObj.constructor.name == "Object") {
+        if (curObj.constructor.name === "Object") {
             Object.keys(curObj).forEach((key) => {
                 var nMetaPath = this.clone(metaPath);
                 nMetaPath.push(key);
@@ -759,13 +686,13 @@ const grul = new (function () {
             }
         }
         else if (curObj.constructor === Function) {
-            if (metaPath[metaPath.length - 1] == "atMatchingFunction") {
+            if (metaPath[metaPath.length - 1] === "atMatchingFunction") {
                 //Perform Logic at Path of data object
                 curObj(this.pluck(data, literalPath.slice(0, - 1)), this)
             }
         }
         else if (curObj.constructor.name === String) {
-            if (metaPath[metaPath.length - 1] == "atMatchingFunction") {
+            if (metaPath[metaPath.length - 1] === "atMatchingFunction") {
                 //Perform Logic at Path of data object
                 window[curObj](this.pluck(data, literalPath.slice(0, - 1)), this)
             }
@@ -775,7 +702,7 @@ const grul = new (function () {
         }
         else if (curObj.constructor === Number && exists) {
             //Do an Equivalence Modifier
-            if (curData.constructor.name == curObj.constructor.name) {
+            if (curData.constructor.name === curObj.constructor.name) {
                 curData += curObj;
             }
         }
@@ -784,18 +711,18 @@ const grul = new (function () {
      *	Description: This function traverses through set, pushing all items at a dimensional depth from base into an array and returning them
      */
     this.atDepth = function (data, depth = 0, logic, historicalTypePath = [], historicalLiteralPath = [], first = true, rootData = data) {
-        if (first == true) {
+        if (first === true) {
             this.atDepthContainer = [];
             first = false;
         }
         if (depth > 0) {
             depth--
-            if (data.constructor.name == "Object") {
+            if (data.constructor.name === "Object") {
                 Object.keys(data).forEach((key) => {
                     this.atDepth(data[key], depth, logic, first);
                 })
             }
-            else if (data.constructor.name == "Array") {
+            else if (data.constructor.name === "Array") {
                 for (var i = 0; i < data.length; i++) {
                     this.atDepth(data[i], depth, logic, first);
                 }
@@ -819,10 +746,10 @@ const grul = new (function () {
                     for (var i = 1; i < data.length; i++) {
                         //compare 0th to others
                         var diffCheck = this.pathExists(data[i], literalPath);
-                        if (diffCheck == true && diffCheck.constructor === Boolean) {
+                        if (diffCheck === true && diffCheck.constructor === Boolean) {
                             if (curData.constructor != Object && curData.constructor != Array) {
                                 var compareSetVal = this.pluck(data[i], literalPath);
-                                if (curData == compareSetVal) {
+                                if (curData === compareSetVal) {
                                     //set equivalent
                                 }
                                 else {
@@ -874,11 +801,11 @@ catch (exception) {
             return this.pluck(data[path[0]], path.slice(1), set);
         }
         else {
-            if (path.length == 0) {
+            if (path.length === 0) {
                 return data;
             }
             else {
-                if (set == null) {
+                if (set === null) {
                     if (data instanceof HTMLElement) {
                         return data.getAttribute(path[0]);
                     }
