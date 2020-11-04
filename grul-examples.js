@@ -122,3 +122,51 @@ var setter = [
 ];
 //Finds object with matching Path Traversal and executes custom function on said path
 grul.atMatching(data,setter);
+
+//Segments object with first occurrence depth and prunes the discovery tree
+grul.atSegment({"Users":[{
+	"name":"Ryan",
+	"Projects":[{
+		"name":"Payment Gateway",
+		"duration":4
+	},{
+		"name":"Event Registration",
+		"duration":4
+	}],
+	"Transactions":[5,6,7,8]
+	
+},{
+	"name":"Justin",
+	"Projects":[{
+		"name":"Customer Relations Management",
+		"duration":4
+	},{
+		"name":"Alumni Management Services",
+		"duration":4
+	}],
+	"Transactions":[1,2,3,4]
+}]
+},
+{
+"include":[["Users"]],
+"exclude":[["Transactions"]]
+},
+(data,htp,hlp,hop)=>{},{
+depth:1,
+lag:0
+}).map(data=>data.data)[0];
+
+//Defines custom ES5 function and then traverses it to retrieve the requested path values
+function test(){
+    this.funcMembString="test"
+}
+
+grul.atMeta({
+    test:{
+        sub1:"branch1",
+        sub2:new test()
+    }
+},[
+    ["test","sub1"],
+    ["test","sub2","funcMembString"]
+],(data)=>{console.log(data)});

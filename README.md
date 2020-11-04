@@ -236,6 +236,26 @@ grul.atSegment({"Users":[{
  
  */
 ```
+#### Traverse custom class instances
+```javascript
+//Defines ES5 "class"
+function test(){
+    this.funcMembString="test"
+}
+
+//traverses data hierarchy with custom ES5 "class"
+grul.atMeta({
+    test:{
+        sub1:"branch1",
+        sub2:new test()
+    }
+},[
+    ["test","sub1"],
+    ["test","sub2","funcMembString"]
+],(data)=>{
+    console.log(data)
+});
+```
 
 #### Additional Features
 * shallowest pattern searches at arbitrary depth ( atShallowestPattern )
@@ -249,8 +269,6 @@ grul.atSegment({"Users":[{
 * Circular Reference Halting
 
 #### Planned Future Changes
-
-* Dynamic Type Handling
 * User defined computation rules (faster large set computation)
   * Scalable Web Workers
   * Promise.then()
