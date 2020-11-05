@@ -127,7 +127,7 @@ const grul = new (function () {
      *	Description: This function checks to see if given path exists in a set
      */
     this.pathExists = function (data, bindpath, curpath = []) {
-        var isEqual = this.arrEquals(bindpath, curpath) && bindpath.length === curpath.length;
+        let isEqual = this.arrEquals(bindpath, curpath) && bindpath.length === curpath.length;
         if (!isEqual) {
             curpath.push(bindpath[curpath.length]);
         }
@@ -174,7 +174,7 @@ const grul = new (function () {
         if (arr1.length !== arr2.length){
             return false;
         }
-        for (var i = parseInt(arr1.length); i--;) {
+        for (let i = parseInt(arr1.length); i--;) {
             if (arr1[i] !== arr2[i]){
                 return false;
             }
@@ -376,7 +376,7 @@ const grul = new (function () {
         if(exclude){
             this.atPattern(start,exclude,{
                 "head":(data,excludehtp,excludehlp,excludehop)=>{
-                    for(var i=0; i<includePaths.length;i++){
+                    for(let i=0; i<includePaths.length;i++){
                         let include = includePaths[i];
                         let includehlp = include.historicalLiteralPath;
                         if(includehlp.join("<===>").indexOf(excludehlp.join("<===>"))>-1){
@@ -438,7 +438,7 @@ const grul = new (function () {
             if (curMeta) {}
             else {
                 newMeta = [];
-                for (var i = 0; i < metaPath.length; i++) {
+                for (let i = 0; i < metaPath.length; i++) {
                     newMeta.push(this.clone(metaTemplate));
                 }
             }
@@ -450,7 +450,7 @@ const grul = new (function () {
 
         if (historicalLiteralPath.length > 0) {
             let matchExists = false;
-            for (var i = 0; i < metaPath.length; i++) {
+            for (let i = 0; i < metaPath.length; i++) {
                 newMeta[i]={
                     matchCount:this.clone(curMeta[i].matchCount),
                     hop:curMeta[i].hop
@@ -500,7 +500,7 @@ const grul = new (function () {
         var nhtpath = historicalTypePath.slice(0);
         nhtpath.push(data.constructor);
         if (data.constructor === Array) {
-            for (var i = 0; i < data.length; i++) {
+            for (let i = 0; i < data.length; i++) {
                 let nhlpath = this.clone(historicalLiteralPath);
                 nhlpath.push(i);
                 this.atPattern(data[i], metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
@@ -514,7 +514,7 @@ const grul = new (function () {
             });
         }
 
-        for (var i = 0; i < metaPath.length; i++) {
+        for (let i = 0; i < metaPath.length; i++) {
             if (i in matched) {
                 continueTraversal = this.executeLogic(logic, "tail", i, aData, historicalTypePath, historicalLiteralPath, newMeta[i].hop, rootData);
                 if (continueTraversal === false) {
@@ -529,7 +529,7 @@ const grul = new (function () {
      */
     this.atShallowestPattern = function (data, metaPath, logic, relativity = 0) {
         var leastDepth = Infinity;
-        var inputs = [];
+        let inputs = [];
         this.atPattern(data, metaPath,{ "head":function (input, historicalTypePath, historicalLiteralPath, historicalObjectPath) {
                 if (historicalLiteralPath.length < leastDepth) {
                     leastDepth = historicalLiteralPath.length;
@@ -546,7 +546,7 @@ const grul = new (function () {
                 });
             }
         }, relativity);
-        for (var i = 0; i < inputs.length; i++) {
+        for (let i = 0; i < inputs.length; i++) {
             logic(inputs[i].data, inputs[i].historicalTypePath, inputs[i].historicalLiteralPath, inputs[i].historicalObjectPath);
         }
         return data;
@@ -556,7 +556,7 @@ const grul = new (function () {
      */
     this.atDeepestPattern = function (data, metaPath, logic, relativity = 0) {
         var greatestDepth = -1;
-        var inputs = [];
+        let inputs = [];
         this.atPattern(data, metaPath, function (input, historicalTypePath, historicalLiteralPath, historicalObjectPath) {
             if (historicalLiteralPath.length > greatestDepth) {
                 greatestDepth = historicalLiteralPath.length;
@@ -569,7 +569,7 @@ const grul = new (function () {
                 historicalObjectPath: historicalObjectPath
             });
         }, relativity);
-        for (var i = 0; i < inputs.length; i++) {
+        for (let i = 0; i < inputs.length; i++) {
             logic(inputs[i].data, inputs[i].historicalTypePath, inputs[i].historicalLiteralPath, inputs[i].historicalObjectPath);
         }
         return data;
@@ -586,7 +586,7 @@ const grul = new (function () {
             })
         }
         else if (data.constructor === Array) {
-            for (var i = 0; i < data.length; i++) {
+            for (let i = 0; i < data.length; i++) {
                 let ntp = historicalTypePath.concat([Array]);
                 let nlp = historicalLiteralPath.concat([i]);
                 this.atEnds(data[i], logic, ntp, nlp);
@@ -608,14 +608,14 @@ const grul = new (function () {
      * 	Description: This function runs passed logic at every potential traversal or endpoint
      */
     this.atEvery = function (data, logic, historicalTypePath = [], historicalLiteralPath = [], rootData = data) {
-        var iContinue = logic(data, historicalTypePath, historicalLiteralPath, rootData);
+        let iContinue = logic(data, historicalTypePath, historicalLiteralPath, rootData);
         if (!(iContinue === true || iContinue === undefined || iContinue === null)) {
             return;
         }
         var newTypePath = this.clone(historicalTypePath);
         newTypePath.push(data.constructor);
         if (data.constructor === Array) {
-            for (var i = 0; i < data.length; i++) {
+            for (let i = 0; i < data.length; i++) {
                 var newLitPath = this.clone(historicalLiteralPath);
                 newLitPath.push(i);
                 this.atEvery(data[i], logic, newTypePath, newLitPath, rootData);
@@ -677,7 +677,7 @@ const grul = new (function () {
             });
         }
         else if (curObj.constructor.name === Array && exists) {
-            for (var i = 0; i < curObj.length; i++) {
+            for (let i = 0; i < curObj.length; i++) {
                 var nMetaPath = this.clone(metaPath);
                 nMetaPath.push(i);
                 for (var x = 0; x < curData.length; x++) {
@@ -725,7 +725,7 @@ const grul = new (function () {
                 })
             }
             else if (data.constructor.name === "Array") {
-                for (var i = 0; i < data.length; i++) {
+                for (let i = 0; i < data.length; i++) {
                     this.atDepth(data[i], depth, logic, first);
                 }
             }
