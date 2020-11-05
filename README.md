@@ -10,7 +10,7 @@ npm install grul
 ```
 require grull to any conveniently named non conflicting reference. examples here are referenced via "grul".
 ```javascript
-const grul=require("grul")
+const grul=require("grul");
 ```
 
 #### CDN Start
@@ -116,7 +116,7 @@ JSON.stringify(
 // "[{\"name\":\"Ryan head mutation\",\"age\":\"26 head mutation\",\"Parents\":[{\"name\":\"Dorothy head mutation\"}]},{\"name\":\"Sarah head mutation\",\"age\":\"27 head mutation\"}]"
 ```
 
-#### Hierarchically Group datasets with declarative templates
+#### Hierarchically group datasets with declarative templates
 ```javascript
 grul.atHierarchy([   
     {EntityId:1,Action:"Transformed",Status:"Completed",Date:"2019-01-03"},
@@ -171,7 +171,7 @@ grul.atHierarchy([
  */
 ```
 
-#### Intelligently Segment and Prune Multi-Dimensional Recursive Patterns
+#### Intelligently segment and prune multi-dimensional recursive patterns
 ```javascript
 grul.atSegment({"Users":[{
         "name":"Ryan",
@@ -257,6 +257,20 @@ grul.atMeta({
 });
 ```
 
+#### JSON structure/data differential based on [RFC 6902](https://tools.ietf.org/html/rfc6902) ( atDiff )
+```javascript
+
+let newest = { name:"Mary Jane", parents:["Barb","John"], transactions:[10,-10,30,-10], dependents:[] };
+let old1 = { name:"Mary Smith", parents:["Barb","Jon"], transactions:[10,-10,30], dependents:["Steve"] };
+let old2 = { name:"Mary Jane", parents:["Barb","John"], transactions:[10,-30,30,-10], dependents:["Steve"] };
+// generate patches?
+grul.atDiff( [ newest,  old1] , (patch)=>{ console.log(patch) } , 0 );
+// generate patches for multiple stores?
+grul.atDiff( [ newest, old1, old2 ] , (patch)=>{ console.log(patch) } , 0 );
+// generate patches in the opposite direction?
+grul.atDiff( [ newest, old1 ] , (patch)=>{ console.log(patch) } , 1 );
+```
+
 #### Additional Features
 * shallowest pattern searches at arbitrary depth ( atShallowestPattern )
 * deepest patterns searches at arbitrary depth ( atDeepestPattern )
@@ -265,7 +279,6 @@ grul.atMeta({
 * retrieve primitives ( atEnds )
 
 #### In-Progress
-* JSON Structure/Data Differential based on [RFC 6902](https://tools.ietf.org/html/rfc6902)
 * Circular Reference Halting
 
 #### Planned Future Changes

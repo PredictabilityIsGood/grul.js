@@ -104,7 +104,13 @@ const grul = new (function () {
         }
         else {
             if (path.length === 0) {
-                return data;
+                if (set === null) {
+                    return data;
+                }
+                else {
+                    data = set;
+                    return data;
+                }
             }
             else {
                 if (set === null) {
@@ -181,7 +187,7 @@ const grul = new (function () {
         for(var i=bindpath.length-1;i>-1;i--){
 
         }
-    }
+    };
     //Recursive Lambda's
     /*  Function Name: this.atHierarchy
      *  Description: This function traverses any static or dynamic template hierarchy executing any head, tail logic to restructure a 2 dimensional JSON set
@@ -241,7 +247,8 @@ const grul = new (function () {
                         let value = head.map(row,
                             historicalTypePath.concat(head.segmentTypePath),
                             historicalLiteralPath.concat(head.segmentLiteralPath));
-                        this.pluck(segment, head.segmentLiteralPath, value);
+                        let set = this.pluck(segment, head.segmentLiteralPath, value)
+                        segment = head.segmentLiteralPath.length === 0 ? set : segment;
                         compoundKey += JSON.stringify(value);
                     });
                     if (compoundKey in compound) {
@@ -313,7 +320,7 @@ const grul = new (function () {
     /*  Function Name: this.atStructure
      *  Description: This function traverses any multidimensional set and modifies the existing path structure (metaPath) to the specified desired path structure
      */
-    this.atStructure = function (data, metaPath, logic, relativity = 0, cont = false, historicalTypePath = [], historicalLiteralPath = [], rootData = data) {
+    this.atStructure = function (data, metaPath, logic, relativity = 0, historicalTypePath = [], historicalLiteralPath = [], rootData = data) {
         /* [{... children:[{...}]}] 
          * oldMetaPath => ["children",Array]
          * newMetaPath => ["children",Object]
@@ -324,7 +331,7 @@ const grul = new (function () {
      *  Description: This function traverses a multidimensional set for the existence of the metaPath starting from the historicalLiteralPath, until it finds the
      *               next existence of metaPath, or the ends are primitive and returns a shallow copy
      */
-    this.atSegment = function (data, metaPath, logic, relativity = 0, cont = false, historicalTypePath = [], historicalLiteralPath = [], rootData = data){
+    this.atSegment = function (data, metaPath, logic, relativity = 0, historicalTypePath = [], historicalLiteralPath = [], rootData = data){
         let include,exclude,depth,lag;
         if(metaPath.constructor === Object){
             include=metaPath.include;
@@ -509,7 +516,6 @@ const grul = new (function () {
             });
         }
 
-        //Tail Logic
         for (var i = 0; i < metaPath.length; i++) {
             if (i in matched) {
                 continueTraversal = this.executeLogic(logic, "tail", i, aData, historicalTypePath, historicalLiteralPath, newMeta[i].hop, rootData);
@@ -522,7 +528,6 @@ const grul = new (function () {
     };
     /*	Function Name: this.atShallowestPattern
      *	Description: This function iterates this.atPattern, stores the inputs with the least depth to be executed logically
-     *	- With cont==true this.atPattern will spawn new pattern traversals when patterns are recorgnized to ensure it matches patters overlapping patterns (Warning, may be expensive)
      */
     this.atShallowestPattern = function (data, metaPath, logic, relativity = 0) {
         var leastDepth = Infinity;
@@ -550,7 +555,6 @@ const grul = new (function () {
     };
     /*	Function Name: this.atDeepestPattern
      *	Description: This function iterates this.atPattern, stores the inputs with most depth to be executed logically - (Returns false within .atPattern where depth is greater than)
-     *	- With cont==true this.atPattern will spawn new pattern traversals when patterns are recorgnized to ensure it matches patters overlapping patterns (Warning, may be expensive)
      */
     this.atDeepestPattern = function (data, metaPath, logic, relativity = 0) {
         var greatestDepth = -1;
@@ -736,48 +740,65 @@ const grul = new (function () {
         return this.atDepthContainer;
     };
     /*	Function Name: this.atDiff
-     *	Description: This function traverses through multiple sets, keeping track of the structural and data differential's between all listed sets. Base sets must be held in array form
+     *	Description: This function traverses through multiple sets, keeping track of the structural and data differentials between all listed sets. Base sets must be held in array form
      */
-    this.atDiff = function (data, diflogic = null, relativity = 0, cont = false, primary = 0) {
-        var PatchDiffs = [];
+    this.atDiff = function (data, logic = null, primary = 0) {
+        let PatchDiffs = [];
         if (data.constructor === Array) {
             if (data.length > 1) {
-                this.atEvery(data[0], (curData, metaPath, literalPath, rootData) => {
-                    for (var i = 1; i < data.length; i++) {
-                        //compare 0th to others
-                        var diffCheck = this.pathExists(data[i], literalPath);
-                        if (diffCheck === true && diffCheck.constructor === Boolean) {
-                            if (curData.constructor != Object && curData.constructor != Array) {
-                                var compareSetVal = this.pluck(data[i], literalPath);
-                                if (curData === compareSetVal) {
-                                    //set equivalent
-                                }
-                                else {
-                                    var newPath = this.clone(literalPath);
-                                    newPath.splice(0, 0, i)
-                                    //set requires updating to base set
-                                    var newPatch = { "op": "replace", "path": newPath, "value": curData, "ref": data };
-                                    PatchDiffs.push(newPatch);
-                                    if (diflogic != null) {
-                                        diflogic(curData, literalPath, rootData, data, i, newPatch);
+                //add, replace checks
+                this.atEvery(data[primary], (curData, historicalTypePath, historicalLiteralPath, rootData) => {
+                    for (var secondary = 0; secondary < data.length; secondary++) {
+                        if(secondary !== primary){
+                            //compare primary set to others
+                            let secondaryPathExists = this.pathExists(data[secondary], historicalLiteralPath);
+                            if (secondaryPathExists && secondaryPathExists.constructor === Boolean) {
+                                if (curData.constructor !== Object && curData.constructor !== Array) {
+                                    let compareSetVal = this.pluck(data[secondary], historicalLiteralPath);
+                                    if (curData === compareSetVal) {
+                                        //set equivalent
+                                    }
+                                    else {
+                                        let nlp = historicalLiteralPath.slice(0);
+                                        //set requires updating to base set
+                                        let patch = { "op": "replace", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary };
+                                        PatchDiffs.push(patch);
+                                        if (logic != null) {
+                                            logic(patch, historicalTypePath, historicalLiteralPath, rootData);
+                                        }
                                     }
                                 }
                             }
-                            return true;
-                        }
-                        else {
-                            var newPath = this.clone(literalPath);
-                            newPath.splice(0, 0, i)
-                            var newPatch = { "op": "add", "path": newPath, "value": curData, "ref": data };
-                            PatchDiffs.push(newPatch);
-                            if (diflogic != null) {
-                                diflogic(curData, literalPath, rootData, data, i, newPatch);
+                            else {
+                                let nlp = historicalLiteralPath.slice(0);
+                                let patch = { "op": "add", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary };
+                                PatchDiffs.push(patch);
+                                if (logic != null) {
+                                    logic(patch, historicalTypePath, historicalLiteralPath, rootData);
+                                }
+                                return false;
                             }
-                            return false;
                         }
-
                     }
                 });
+                //removal checks
+                for(var secondary=0; secondary < data.length; secondary++){
+                    if(secondary !== primary){
+                        this.atEvery(data[secondary], (curData, historicalTypePath, historicalLiteralPath, rootData) => {
+                            //compare secondary set to primary
+                            let primaryPathExists = this.pathExists(data[primary], historicalLiteralPath);
+                            if (!(primaryPathExists && primaryPathExists.constructor === Boolean)) {
+                                let nlp = historicalLiteralPath.slice(0);
+                                let patch = { "op": "remove", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary };
+                                PatchDiffs.push(patch);
+                                if (logic != null) {
+                                    logic(patch, historicalTypePath, historicalLiteralPath, rootData);
+                                }
+                                return false;
+                            }
+                        });
+                    }
+                }
             }
             else {
                 console.log("Nothing to compare against");
@@ -786,7 +807,6 @@ const grul = new (function () {
         else {
             console.log("Base data is not an array");
         }
-
         return PatchDiffs;
     };
 })();
@@ -802,7 +822,13 @@ catch (exception) {
         }
         else {
             if (path.length === 0) {
-                return data;
+                if (set === null) {
+                    return data;
+                }
+                else {
+                    data = set;
+                    return data;
+                }
             }
             else {
                 if (set === null) {
