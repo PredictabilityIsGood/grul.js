@@ -65,19 +65,20 @@ const grul = new (function () {
      *  Description: Retrieves functions arguments given a function definition
      */
     this.funcArgs = function (func) {
-        return (func + '')
-            .replace(/[/][/].*$/mg, '')
-            .replace(/\s+/g, '')
-            .replace(/[/][*][^/*]*[*][/]/g, '')
-            .split('){', 1)[0].replace(/^[^(]*[(]/, '')
-            .replace(/=[^,]+/g, '')
-            .split(',').filter(Boolean);
+        return (func + "")
+            .replace(/[/][/].*$/mg, "")
+            .replace(/\s+/g, "")
+            .replace(/[/][*][^/*]*[*][/]/g, "")
+            .split("){", 1)[0].replace(/^[^(]*[(]/, "")
+            .replace(/=[^,]+/g, "")
+            .split(",").filter(Boolean);
     };
     /*  Function Name: this.executeLogic
      *  Description: Executes logic of lambda depending on passed structure
      */
     this.executeLogic = function (logicController, location, patternIndex, aData, historicalTypePath, historicalLiteralPath, historicalObjectPath, initial) {
         var logic = logicController;
+        var continueTraversal;
         if (logic.constructor === Array) {
             if (logic[patternIndex].constructor === Object) {
                 continueTraversal = location in logic[patternIndex] ? logic[patternIndex][location](aData, historicalTypePath, historicalLiteralPath, historicalObjectPath, initial) : true;
@@ -102,34 +103,32 @@ const grul = new (function () {
         if (path.length > 1) {
             return this.pluck(data[path[0]], path.slice(1), set);
         }
-        else {
-            if (path.length === 0) {
-                if (set === null) {
-                    return data;
-                }
-                else {
-                    data = set;
-                    return data;
-                }
+        else if (path.length === 0) {
+            if (set === null) {
+                return data;
             }
             else {
-                if (set === null) {
-                    return data[path[0]];
-                }
-                else {
-                    data[path[0]] = set;
-                    return data[path[0]];
-                }
+                data = set;
+                return data;
             }
         }
+        else {
+            if (set === null) {
+                return data[path[0]];
+            }
+            else {
+                data[path[0]] = set;
+                return data[path[0]];
+            }
+        }
+        
     };
     /* 	Function Name: this.pathExists
      *	Description: This function checks to see if given path exists in a set
      */
     this.pathExists = function (data, bindpath, curpath = []) {
         var isEqual = this.arrEquals(bindpath, curpath) && bindpath.length === curpath.length;
-        if (isEqual) { }
-        else {
+        if (!isEqual) {
             curpath.push(bindpath[curpath.length]);
         }
         try {
@@ -166,17 +165,19 @@ const grul = new (function () {
      */
     this.isPrimitive = function (arg) {
         var type = typeof arg;
-        return arg === null || (type != "object" && type != "function");
-    }
+        return arg === null || (type !== "object" && type !== "function");
+    };
     /*	Function Name: this.arrEquals
      *	Description: This function iterates through array elements to check equality
      */
     this.arrEquals = function (arr1, arr2) {
-        if (arr1.length !== arr2.length)
+        if (arr1.length !== arr2.length){
             return false;
-        for (var i = arr1.length; i--;) {
-            if (arr1[i] !== arr2[i])
+        }
+        for (var i = parseInt(arr1.length); i--;) {
+            if (arr1[i] !== arr2[i]){
                 return false;
+            }
         }
         return true;
     };
@@ -184,9 +185,7 @@ const grul = new (function () {
      *  Description: This function iterates backwards through literal paths to find matching patterns
      */
     this.patternExists = function(data, bindpath){
-        for(var i=bindpath.length-1;i>-1;i--){
-
-        }
+        return "not yet implemented";
     };
     //Recursive Lambda's
     /*  Function Name: this.atHierarchy
@@ -211,7 +210,7 @@ const grul = new (function () {
                             "hierarchy": segmentInput
                         };
                         branches.push(segmentMap);
-                        this.pluck(out, literalPath, [])
+                        this.pluck(out, literalPath, []);
                         return false;
                     }
                     else if (segmentInput.constructor === Object && "head" in segmentInput && segmentInput.head.constructor === Function) {
@@ -220,7 +219,7 @@ const grul = new (function () {
                             "segmentLiteralPath": literalPath,
                             "map": segmentInput.head
                         };
-                        heads.push(segmentMap)
+                        heads.push(segmentMap);
                         this.pluck(out, segmentMap.segmentLiteralPath, "");
                         return false;
                     }
@@ -235,7 +234,7 @@ const grul = new (function () {
                         return false;
                     }
                     else {
-                        this.pluck(out, literalPath, this.scaffold(segmentInput))
+                        this.pluck(out, literalPath, this.scaffold(segmentInput));
                     }
                 });
                 //fill segments
@@ -247,7 +246,7 @@ const grul = new (function () {
                         let value = head.map(row,
                             historicalTypePath.concat(head.segmentTypePath),
                             historicalLiteralPath.concat(head.segmentLiteralPath));
-                        let set = this.pluck(segment, head.segmentLiteralPath, value)
+                        let set = this.pluck(segment, head.segmentLiteralPath, value);
                         segment = head.segmentLiteralPath.length === 0 ? set : segment;
                         compoundKey += JSON.stringify(value);
                     });
@@ -259,9 +258,9 @@ const grul = new (function () {
                             rows: [row],
                             branches: branches,
                             segment: segment
-                        }
+                        };
                     }
-                })
+                });
 
                 //fill segment with tail results
                 Object.keys(compound).forEach((key) => {
@@ -281,9 +280,9 @@ const grul = new (function () {
                             historicalLiteralPath.concat(compound[key].segmentLiteralPath),
                             rHierarchy,
                             branches
-                        ))
-                    })
-                })
+                        ));
+                    });
+                });
             });
         }
         else {
@@ -312,8 +311,8 @@ const grul = new (function () {
                 }
             })
             tails.forEach((tail) => {
-                this.pluck(root, tail.segmentLiteralPath, tail.map(data, tail.segmentTypePath, tail.segmentLiteralPath, hierarchy))
-            })
+                this.pluck(root, tail.segmentLiteralPath, tail.map(data, tail.segmentTypePath, tail.segmentLiteralPath, hierarchy));
+            });
         }
         return root;
     };
@@ -820,31 +819,30 @@ catch (exception) {
         if (path.length > 1) {
             return this.pluck(data[path[0]], path.slice(1), set);
         }
-        else {
-            if (path.length === 0) {
-                if (set === null) {
-                    return data;
-                }
-                else {
-                    data = set;
-                    return data;
-                }
+        else if (path.length === 0) {
+            if (set === null) {
+                return data;
             }
             else {
-                if (set === null) {
-                    if (data instanceof HTMLElement) {
-                        return data.getAttribute(path[0]);
-                    }
-                    else {
-                        return data[path[0]];
-                    }
+                data = set;
+                return data;
+            }
+        }
+        else {
+            if (set === null) {
+                if (data instanceof HTMLElement) {
+                    return data.getAttribute(path[0]);
                 }
                 else {
-                    data[path[0]] = set;
                     return data[path[0]];
                 }
             }
+            else {
+                data[path[0]] = set;
+                return data[path[0]];
+            }
         }
+        
     };
     console.log("Vanilla JavaScript Load");
 }

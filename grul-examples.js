@@ -24,19 +24,12 @@
  * 
  */
 
-try{
-	const grul = require("grul");
-}
-catch(exception){
-	console.log("non require context");
-}
-
 /* Example Data Set */
 var data = [
 	{"name":"Ryan",	"age":25, "movies":["Saving Private Ryan","Shawshank Redemption","Interstellar"],	"parents":[{ "name" :"Dorothy"}] },
 	{"name":"Plato","age":38, "movies":["a Movie"] },
 	{"name":"Socrates",	"age":24, "misc": { "cd":"whatever"} }
-]
+];
 
 /* Example Functions */
 
@@ -154,11 +147,11 @@ grul.atSegment({"Users":[{
 (data,htp,hlp,hop)=>{},{
 depth:1,
 lag:0
-}).map(data=>data.data)[0];
+}).map(data => data.data)[0];
 
 //Defines custom ES5 function and then traverses it to retrieve the requested path values
 function test(){
-    this.funcMembString="test"
+    this.funcMembString="test";
 }
 
 grul.atMeta({
@@ -169,7 +162,7 @@ grul.atMeta({
 },[
     ["test","sub1"],
     ["test","sub2","funcMembString"]
-],(data)=>{console.log(data)});
+],(data) => {console.log(data)});
 
 
 
@@ -177,8 +170,8 @@ let newest = { name:"Mary Jane", parents:["Barb","John"], transactions:[10,-10,3
 let old1 = { name:"Mary Smith", parents:["Barb","Jon"], transactions:[10,-10,30], dependents:["Steve"] };
 let old2 = { name:"Mary Jane", parents:["Barb","John"], transactions:[10,-30,30,-10], dependents:["Steve"] };
 // generate patches?
-grul.atDiff( [ newest,  old1] , (patch)=>{ console.log(patch) } , 0 );
+grul.atDiff( [ newest,  old1] , (patch) => { console.log(patch); } , 0 );
 // generate patches for multiple stores?
-grul.atDiff( [ newest, old1, old2 ] , (patch)=>{ console.log(patch) } , 0 );
+grul.atDiff( [ newest, old1, old2 ] , (patch) => { console.log(patch); } , 0 );
 // generate patches in the opposite direction?
-grul.atDiff( [ newest, old1 ] , (patch)=>{ console.log(patch) } , 1 );
+grul.atDiff( [ newest, old1 ] , (patch) => { console.log(patch); } , 1 );

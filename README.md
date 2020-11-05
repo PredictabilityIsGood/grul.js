@@ -272,16 +272,16 @@ grul.atDiff( [ newest, old1 ] , (patch)=>{ console.log(patch) } , 1 );
 ```
 
 #### Additional Features
-* shallowest pattern searches at arbitrary depth ( atShallowestPattern )
-* deepest patterns searches at arbitrary depth ( atDeepestPattern )
-* normal recursive tree traversal with halting capabilities ( atEvery ) 
-* define patterns with object templates ( atMatching )
-* retrieve primitives ( atEnds )
+  * shallowest pattern searches at arbitrary depth ( atShallowestPattern )
+  * deepest patterns searches at arbitrary depth ( atDeepestPattern )
+  * normal recursive tree traversal with halting capabilities ( atEvery ) 
+  * define patterns with object templates ( atMatching )
+  * retrieve primitives ( atEnds )
 
 #### In-Progress
-* Circular Reference Halting
+  * Circular Reference Halting
 
 #### Planned Future Changes
-* User defined computation rules (faster large set computation)
-  * Scalable Web Workers
-  * Promise.then()
+  * User defined computation rules (faster large set computation)
+    * Scalable Web Workers
+    * Promise.then()
