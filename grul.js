@@ -272,7 +272,7 @@ const grul = new (function () {
                         let nTypePath = typePath.concat(branch.segmentTypePath);
                         let nLiteralPath = literalPath.concat(branch.segmentLiteralPath);
                         this.atHierarchy(compound[key].rows, branch.hierarchy, nTypePath, nLiteralPath, root);
-                    })
+                    });
                     tails.forEach((tail) => {
                         this.pluck(compound[key].segment, tail.segmentLiteralPath, tail.map(
                             compound[key].rows,
@@ -340,8 +340,8 @@ const grul = new (function () {
             include=metaPath;
         }
         if(relativity.constructor === Array){ 
-            depth=relativity[0] || 1
-            lag=relativity[1] || 0
+            depth=relativity[0] || 1;
+            lag=relativity[1] || 0;
         }
         else if(relativity.constructor === Object){
             depth=relativity.depth || 0;
@@ -355,15 +355,15 @@ const grul = new (function () {
         let includePaths=[];
         let excludePaths=[];
         this.atPattern(start,include,{
-            "head":(data,htp,hlp,hop)=>{
-                if(hop.length==depth){
+            "head":(data,htp,hlp,hop) => {
+                if(hop.length === depth){
                     includePaths.push({
                         historicalTypePath:htp.slice(0,htp.length+lag),
                         historicalLiteralPath:hlp.slice(0,htp.length+lag),
                         historicalObjectPath:hop
                     });
                 }
-                else if(hop.length==(depth+1)){
+                else if(hop.length === (depth+1)){
                     excludePaths.push({
                         historicalTypePath:htp,
                         historicalLiteralPath:hlp,
@@ -374,7 +374,6 @@ const grul = new (function () {
             }
         },lag);
         if(exclude){
-            let excl
             this.atPattern(start,exclude,{
                 "head":(data,excludehtp,excludehlp,excludehop)=>{
                     for(var i=0; i<includePaths.length;i++){
