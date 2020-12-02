@@ -24,6 +24,10 @@
  * 
  */
 
+ if(!grul){
+	grul = require("./grul");
+ }
+
 /* Example Data Set */
 var data = [
 	{"name":"Ryan",	"age":25, "movies":["Saving Private Ryan","Shawshank Redemption","Interstellar"],	"parents":[{ "name" :"Dorothy"}] },
@@ -170,8 +174,19 @@ let newest = { name:"Mary Jane", parents:["Barb","John"], transactions:[10,-10,3
 let old1 = { name:"Mary Smith", parents:["Barb","Jon"], transactions:[10,-10,30], dependents:["Steve"] };
 let old2 = { name:"Mary Jane", parents:["Barb","John"], transactions:[10,-30,30,-10], dependents:["Steve"] };
 // generate patches?
-grul.atDiff( [ newest,  old1] , (patch) => { console.log(patch); } , 0 );
+grul.atDiff( [ newest,  old1 ] , (patch) => { console.log(patch); } , 0 );
 // generate patches for multiple stores?
 grul.atDiff( [ newest, old1, old2 ] , (patch) => { console.log(patch); } , 0 );
 // generate patches in the opposite direction?
 grul.atDiff( [ newest, old1 ] , (patch) => { console.log(patch); } , 1 );
+
+
+//circular reference halting
+let circ1 = { "key":1, "foreign":null };
+let circ2 = { "key":2, "foreign":circ1 };
+circ1.foreign = circ2;
+grul.atPattern(circ1,[Object],{
+	"head":(data,htp,hlp,hop)=>{ 
+		console.log("circular reference halting test");
+	}
+});

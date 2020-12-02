@@ -181,11 +181,26 @@ const grul = new (function () {
         }
         return true;
     };
-    /*  Function Name: this.patternExists
-     *  Description: This function iterates backwards through literal paths to find matching patterns
+    /*  Variable Name: this.accessMap
+     *  Description: This variable holds references to all objects that have been accessed via isCircular to remove __accessed__ key for later use
      */
-    this.patternExists = function(data, bindpath){
-        return "not yet implemented";
+    this.accessMap = {};
+    /*  Function Name: this.atCircular
+     *  Description: This function determines given a dataset whether or not that traversed path is circular in nature
+     */
+    this.isCircular = function (data){
+        if(this.isPrimitive(data)){
+            return false;
+        }
+        else {
+            if("__accessed__" in data && data.__accessed__){
+                return true;
+            }
+            let accessMapKey = Object.keys(this.accessMap).length;
+            this.accessMap[accessMapKey] = data;
+            data.__accessed__ = true;
+            return false;
+        }
     };
     //Recursive Lambda's
     /*  Function Name: this.atHierarchy
@@ -447,6 +462,11 @@ const grul = new (function () {
             metaPath = [metaPath];
             newMeta = [metaTemplate];
         }
+        
+        if(this.isCircular(data)){
+            console.log("data traversal halted @ "+historicalLiteralPath.join("-"))
+            return data;
+        }
 
         if (historicalLiteralPath.length > 0) {
             let matchExists = false;
@@ -521,6 +541,12 @@ const grul = new (function () {
                     return aData;
                 }
             }
+        }
+        if(data === rootData){
+            Object.keys(this.accessMap).forEach(key=>{
+                delete this.accessMap[key].__accessed__;    //clean up temporary member on accessed object
+                delete this.accessMap[key];                 //clean up temporary member on access map
+            });
         }
         return data;
     };

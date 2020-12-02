@@ -264,11 +264,25 @@ let newest = { name:"Mary Jane", parents:["Barb","John"], transactions:[10,-10,3
 let old1 = { name:"Mary Smith", parents:["Barb","Jon"], transactions:[10,-10,30], dependents:["Steve"] };
 let old2 = { name:"Mary Jane", parents:["Barb","John"], transactions:[10,-30,30,-10], dependents:["Steve"] };
 // generate patches?
-grul.atDiff( [ newest,  old1] , (patch)=>{ console.log(patch) } , 0 );
+grul.atDiff( [ newest, old1 ] , (patch)=>{ console.log(patch) } , 0 );
 // generate patches for multiple stores?
 grul.atDiff( [ newest, old1, old2 ] , (patch)=>{ console.log(patch) } , 0 );
 // generate patches in the opposite direction?
 grul.atDiff( [ newest, old1 ] , (patch)=>{ console.log(patch) } , 1 );
+```
+
+#### Circular Reference Halting
+```javascript
+let circ1 = { "key":1, "foreign":null };    //object as an entry point
+let circ2 = { "key":2, "foreign":circ1 };   //object as a secondary reference
+circ1.foreign = circ2;                      //attach circ1.foreign to circ2.foreign
+grul.atPattern(circ1,[Object],{
+	"head":(data,htp,hlp,hop)=>{ 
+		console.log("circular reference halting test");
+	}
+});
+//upon reaching a circular traversal path, program will recursively return stopping additional paths (logging out the traversal as well)
+//expected output in this case would be "data traversal halted @ foreign-foreign"
 ```
 
 #### Additional Features
@@ -277,9 +291,6 @@ grul.atDiff( [ newest, old1 ] , (patch)=>{ console.log(patch) } , 1 );
 * normal recursive tree traversal with halting capabilities ( atEvery ) 
 * define patterns with object templates ( atMatching )
 * retrieve primitives ( atEnds )
-
-#### In-Progress
-* Circular Reference Halting
 
 #### Planned Future Changes
 * User defined computation rules (faster large set computation)
