@@ -284,6 +284,32 @@ grul.atPattern(circ1,[Object],{
 //upon reaching a circular traversal path, program will recursively return stopping additional paths (logging out the traversal as well)
 //expected output in this case would be "data traversal halted @ foreign-foreign"
 ```
+#### Modify default custom enumerator(s)
+```javascript
+//Custom ES5 'Class'
+function customType(){
+    this.GetCustomEntries = ()=>{
+        return ["another","object"];
+    };
+    this.GetOtherCustomEntries = ()=>{
+        return ["other","object"];
+    };
+}
+//single enumerator
+grul.extend(customType,(data, metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct)=>{
+        this.atPattern(data.GetCustomEntries(), metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
+});
+//multiple enumerators
+grul.extend(customType,
+[
+    (data, metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct)=>{
+        this.atPattern(data.GetCustomEntries(), metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
+    },
+    (data, metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct)=>{
+        this.atPattern(data.GetOtherCustomEntries(), metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
+    }
+]);
+```
 
 #### Additional Features
 * shallowest pattern searches at arbitrary depth ( atShallowestPattern )

@@ -95,6 +95,26 @@ const grul = new (function () {
         }
         return continueTraversal;
     };
+    /*  Variable Name: this.traversalMap
+     *  Description: This variable holds a traversal map
+     */
+    this.typeExtensions = {
+        "Array":{
+            type: Array,
+            enumerator:()=>{
+                return [];
+            }
+        }
+    }
+    /*  Function Name: this.extend
+     *  Description: This function configures a type extension for the enumerator specified
+     */
+    this.extend = function(type,enumerator){
+        this.typeExtensions[type.name] = {
+            type:type,
+            enumerator:(enumerator.constructor===Array?enumerator:[enumerator])
+        };
+    }
     //Recursive Helper Functions
     /*	Function Name: this.pluck
      *	Description: This function traverses data given a path (array of literal traversals in order)
@@ -519,6 +539,7 @@ const grul = new (function () {
         
         var nhtpath = historicalTypePath.slice(0);
         nhtpath.push(data.constructor);
+        data.constructor in this.traverse
         if (data.constructor === Array) {
             for (let i = 0; i < data.length; i++) {
                 let nhlpath = this.clone(historicalLiteralPath);
@@ -527,11 +548,18 @@ const grul = new (function () {
             }
         }
         else if (data.constructor === Object || (typeof data == 'object' && data !== null) ) {
-            Object.keys(data).forEach((key) => {
-                let nhlpath = this.clone(historicalLiteralPath);
-                nhlpath.push(key);
-                this.atPattern(data[key], metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
-            });
+            if( data.constructor.name in this.typeExtensions ){
+                this.typeExtensions[data.constructor.name].enumerators.forEach((enumerator)=>{
+                    enumerator(data, metaPath, logic, relativity, nhtpath, historicalLiteralPath, newMeta, rootData, direct);
+                });
+            }
+            else{
+                Object.keys(data).forEach((key) => {
+                    let nhlpath = this.clone(historicalLiteralPath);
+                    nhlpath.push(key);
+                    this.atPattern( data[key], metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
+                });
+            }
         }
 
         for (let i = 0; i < metaPath.length; i++) {
