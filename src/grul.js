@@ -101,7 +101,7 @@ const grul = new (function () {
     this.typeExtensions = {
         "Array":{
             type: Array,
-            enumerator:()=>{
+            enumerators:()=>{
                 return [];
             }
         }
@@ -112,7 +112,7 @@ const grul = new (function () {
     this.extend = function(type,enumerator){
         this.typeExtensions[type.name] = {
             type:type,
-            enumerator:(enumerator.constructor===Array?enumerator:[enumerator])
+            enumerators:(enumerator.constructor===Array?enumerator:[enumerator])
         };
     }
     //Recursive Helper Functions
