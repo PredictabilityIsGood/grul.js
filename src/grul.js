@@ -205,7 +205,7 @@ const grul = new (function () {
      *  Description: This variable holds references to all objects that have been accessed via isCircular to remove __accessed__ key for later use
      */
     this.accessMap = {};
-    /*  Function Name: this.atCircular
+    /*  Function Name: this.isCircular
      *  Description: This function determines given a dataset whether or not that traversed path is circular in nature
      */
     this.isCircular = function (data){
@@ -792,9 +792,9 @@ const grul = new (function () {
         return this.atDepthContainer;
     };
     /*	Function Name: this.atDiff
-     *	Description: This function traverses through multiple sets, keeping track of the structural and data differentials between all listed sets. Base sets must be held in array form
+     *	Description: This function traverses through multiple sets, keeping track of the structural and data differentials between all listed sets. Base sets must be held in array form. strict == true will modify contents to exactly match RFC 6902 standard
      */
-    this.atDiff = function (data, logic = null, primary = 0) {
+    this.atDiff = function (data, logic = null, primary = 0, strict = false) {
         let PatchDiffs = [];
         if (data.constructor === Array) {
             if (data.length > 1) {
@@ -813,7 +813,9 @@ const grul = new (function () {
                                     else {
                                         let nlp = historicalLiteralPath.slice(0);
                                         //set requires updating to base set
-                                        let patch = { "op": "replace", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary };
+                                        let patch = strict ? 
+                                            { "op":"replace", "path": "/" + nlp.join("/"), "value": curData } : 
+                                            { "op": "replace", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary };
                                         PatchDiffs.push(patch);
                                         if (logic != null) {
                                             logic(patch, historicalTypePath, historicalLiteralPath, rootData);
