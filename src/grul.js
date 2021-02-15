@@ -813,9 +813,7 @@ const grul = new (function () {
                                     else {
                                         let nlp = historicalLiteralPath.slice(0);
                                         //set requires updating to base set
-                                        let patch = strict ? 
-                                            { "op":"replace", "path": "/" + nlp.join("/"), "value": curData } : 
-                                            { "op": "replace", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary };
+                                        let patch = this.RFC6902({ "op": "replace", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary },strict);
                                         PatchDiffs.push(patch);
                                         if (logic != null) {
                                             logic(patch, historicalTypePath, historicalLiteralPath, rootData);
@@ -825,7 +823,7 @@ const grul = new (function () {
                             }
                             else {
                                 let nlp = historicalLiteralPath.slice(0);
-                                let patch = { "op": "add", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary };
+                                let patch = this.RFC6902({ "op": "add", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary });
                                 PatchDiffs.push(patch);
                                 if (logic != null) {
                                     logic(patch, historicalTypePath, historicalLiteralPath, rootData);
@@ -843,7 +841,7 @@ const grul = new (function () {
                             let primaryPathExists = this.pathExists(data[primary], historicalLiteralPath);
                             if (!(primaryPathExists && primaryPathExists.constructor === Boolean)) {
                                 let nlp = historicalLiteralPath.slice(0);
-                                let patch = { "op": "remove", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary };
+                                let patch = this.RFC6902({ "op": "remove", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary });
                                 PatchDiffs.push(patch);
                                 if (logic != null) {
                                     logic(patch, historicalTypePath, historicalLiteralPath, rootData);
@@ -863,6 +861,14 @@ const grul = new (function () {
         }
         return PatchDiffs;
     };
+    this.RFC6902 = function (patch, strict = false) {
+        if(strict){
+            delete patch.["ref"];
+            delete patch["#"];
+            patch["path"] = "/" + patch["path"].join("/")
+        }
+        return patch;
+    }
 })();
 
 try {
