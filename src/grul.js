@@ -95,7 +95,7 @@ const grul = new (function () {
         }
         return continueTraversal;
     };
-    /*  Variable Name: this.traversalMap
+    /*  Variable Name: this.typeExtensions
      *  Description: This variable holds a traversal map
      */
     this.typeExtensions = {
@@ -539,7 +539,6 @@ const grul = new (function () {
         
         var nhtpath = historicalTypePath.slice(0);
         nhtpath.push(data.constructor);
-        data.constructor in this.traverse
         if (data.constructor === Array) {
             for (let i = 0; i < data.length; i++) {
                 let nhlpath = this.clone(historicalLiteralPath);
