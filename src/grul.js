@@ -823,7 +823,7 @@ const grul = new (function () {
                             }
                             else {
                                 let nlp = historicalLiteralPath.slice(0);
-                                let patch = this.RFC6902({ "op": "add", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary });
+                                let patch = this.RFC6902({ "op": "add", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary },strict);
                                 PatchDiffs.push(patch);
                                 if (logic != null) {
                                     logic(patch, historicalTypePath, historicalLiteralPath, rootData);
@@ -841,7 +841,7 @@ const grul = new (function () {
                             let primaryPathExists = this.pathExists(data[primary], historicalLiteralPath);
                             if (!(primaryPathExists && primaryPathExists.constructor === Boolean)) {
                                 let nlp = historicalLiteralPath.slice(0);
-                                let patch = this.RFC6902({ "op": "remove", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary });
+                                let patch = this.RFC6902({ "op": "remove", "path": nlp, "value": curData, "ref": data[secondary], "#":secondary },strict);
                                 PatchDiffs.push(patch);
                                 if (logic != null) {
                                     logic(patch, historicalTypePath, historicalLiteralPath, rootData);
