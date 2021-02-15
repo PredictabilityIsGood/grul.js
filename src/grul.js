@@ -863,7 +863,7 @@ const grul = new (function () {
     };
     this.RFC6902 = function (patch, strict = false) {
         if(strict){
-            delete patch.["ref"];
+            delete patch["ref"];
             delete patch["#"];
             patch["path"] = "/" + patch["path"].join("/");
         }
