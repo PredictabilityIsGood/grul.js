@@ -1,5 +1,5 @@
 # grul.js
-A recursive library for chaining generic recursive functions as lambda utilities. 
+A library for chaining generic recursive functions as lambda utilities. 
 
 [npmjs](https://www.npmjs.com/package/grul)
 
