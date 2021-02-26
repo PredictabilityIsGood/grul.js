@@ -65,13 +65,13 @@ var data = [
     {"name":"Ryan","age":26, "Parents":[{"name":"Dorothy"}]},
     {"name":"Sarah","age":27}
 ];
-
 //no mutation
 JSON.stringify(
     grul.atPattern(data,[Array,Object],{
         "head":function(input,typePath,literalPath,root){
-        input.constructor !== Array && input.constructor !== Object ? input+=" head mutation" : input ;
-            // return false to stop recursion
+            if(input.constructor !== Array && input.constructor !== Object){
+                input+=" head mutation"
+            }
         },
         "tail":function(input,typePath,literalPath,root){
             console.log( 
@@ -94,8 +94,9 @@ JSON.stringify(
 JSON.stringify(
     grul.atPattern(data,[Array,Object],{
         "head":function(input,typePath,literalPath,root){
-        input.constructor !== Array && input.constructor !== Object ? grul.pluck(root,literalPath,input+" head mutation") : input;
-            // return false to stop recursion
+            if(input.constructor !== Array && input.constructor !== Object){
+                grul.pluck(root,literalPath,input+" head mutation")
+            }
         },
         "tail":function(input,typePath,literalPath,root){
             console.log( 
@@ -311,6 +312,8 @@ grul.extend(customType,
 ]);
 ```
 
+
+
 #### Additional Features
 * shallowest pattern searches at arbitrary depth ( atShallowestPattern )
 * deepest patterns searches at arbitrary depth ( atDeepestPattern )
@@ -322,3 +325,81 @@ grul.extend(customType,
 * User defined computation rules (faster large set computation)
   * Scalable Web Workers
   * Promise.then()
+
+### Advanced Examples
+#### Generate multi-dimensional trees from array structures ( logarithmically linked subdivisions )
+Review grul.atSubdivision in snippet below. This example generates a list of players at specific ratings while generating a bracket for these players as well as creating a play schedule
+```javascript
+let [numUsers, bracketSize, minRating, maxRating, playerIndex, brackets, bracketTree] = [560,8,0,200,0,[],{}];
+let players = new Array(numUsers).fill(null);
+
+// Generate list of 560 players with random ratings
+players = players.map((blank,index)=>{
+    let aPlayer = { name:`Player ${index}`, rating:Math.floor(((Math.random()*(maxRating - minRating)) - minRating)) };
+    return aPlayer;
+});
+
+// Sort list of 560 players by random rating assignment
+players = players.sort((a,b)=>{ 
+    return a.rating < b.rating  ? -1 : 1;
+});
+
+// Generate bracket groupings
+brackets = grul.atHierarchy(players,[{
+    Name:{
+        "head":(row)=>{
+            let groupName = `Group ${Math.floor(playerIndex/bracketSize)}`;
+            playerIndex++;
+            return groupName;
+        }
+    },
+    Players:{
+        "tail":(rows)=>{
+            return rows;
+        }
+    },
+    Matches:{
+        "tail":(rows)=>{
+            let matchList = [];
+            let playerCount = rows.length;
+            for(var i=0; i < rows.length/2; i++){
+                let match = [ rows[i] , rows[((rows.length-i)-1)] ];
+                matchList.push(match);
+            }
+            return matchList;
+        }
+    },
+    Statistics:{
+        "tail":(rows)=>{
+            let bracketStatistics = rows.reduce((accumulator,player)=>{
+                accumulator.min = player.rating < accumulator.min ? player.rating : accumulator.min;
+                accumulator.max = player.rating > accumulator.max ? player.rating : accumulator.max;
+                accumulator.cumulative = accumulator.cumulative + player.rating;
+                return accumulator;
+            },{ min:Infinity, max:0, cumulative:0 });
+            bracketStatistics.average = bracketStatistics.cumulative / rows.length;
+            return bracketStatistics;
+        }
+    }
+}]);
+
+bracketTree = {
+    "Rating Groups":brackets.map((bracket)=>{
+
+        // subdivide player matchups into groups representing advancement state of each matchup
+        let bracketSchedule = grul.atSubdivision(bracket.Matches,2,(data,ntp,nlp)=>{
+            data.winner = Math.floor(Math.random()*2); // add randomized winner for the player advanced ()
+        });
+
+        return { 
+            "schedule":bracketSchedule,
+            "average":bracket.Statistics.average,
+            "range":{
+                "min":bracket.Statistics.min, "max": bracket.Statistics.max,
+            }
+        }
+    })
+}
+
+console.log(bracketTree);
+```

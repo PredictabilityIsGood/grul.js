@@ -238,6 +238,10 @@ const grul = new (function () {
                 let out = this.scaffold(rHierarchy); // defines scaffolding for template to be cloned into a segment instance
                 //build branches
                 this.atEvery(rHierarchy, (segmentInput, typePath, literalPath) => {
+                    if(segmentInput === null){
+                        return false;
+                    }
+                    
                     if (segmentInput.constructor === Array) {
                         let segmentMap = {
                             "segmentTypePath": typePath,
@@ -285,6 +289,15 @@ const grul = new (function () {
                         segment = head.segmentLiteralPath.length === 0 ? set : segment;
                         compoundKey += JSON.stringify(value);
                     });
+                    /* Future Recursively Enumerable Hierarchy Updates
+                    this.atPattern(segment,["head"],{"head":(data,htp,hlp)=>{
+                        Object.keys(this.accessMap).forEach(key=>{
+                            delete this.accessMap[key].__accessed__;    //clean up temporary member on accessed object
+                            delete this.accessMap[key];                 //clean up temporary member on access map
+                        });
+                        this.atHierarchy([row],segment,historicalTypePath.concat(htp),historicalLiteralPath.concat(hlp),root);
+                    }});
+                    */
                     if (compoundKey in compound) {
                         compound[compoundKey].rows.push(row);
                     }
@@ -296,7 +309,6 @@ const grul = new (function () {
                         };
                     }
                 });
-
                 //fill segment with tail results
                 Object.keys(compound).forEach((key) => {
                     let parent = this.pluck(root, historicalLiteralPath);
@@ -350,6 +362,28 @@ const grul = new (function () {
             });
         }
         return root;
+    };
+    /*  Function Name: this.atSubdivision
+     *  Description: This function subdivides any 2 dimensional array into a linked tree based on the number of subdivisions specified, providing the user with
+     *              a function at each subdivisions for making customizations to the subdivided area
+     */
+    this.atSubdivision = function (data,subdivisions=2,logic,historicalTypePath=[],historicalLiteralPath=[],rootData = data){
+        if(data.length===1){
+            let ntp = historicalTypePath.concat([Array]);
+            let nlp = historicalLiteralPath.concat([0]);
+            return data[0];
+        }
+        else{
+            let subdivision = new Array(subdivisions).fill(null);
+            let ntp = historicalTypePath.concat([Array,Object]);
+            subdivision = subdivision.map((blank,index)=>{
+                let nlp = historicalLiteralPath.concat([index,"group"]);
+                return this.atSubdivision(data.slice(index*(data.length/subdivisions),(index+1)*(data.length/subdivisions)),subdivisions,logic,ntp,nlp);
+            });
+            let subdivisionGroup = { group:subdivision };
+            logic(subdivisionGroup,historicalTypePath,historicalLiteralPath)
+            return subdivisionGroup;
+        }
     };
     /*  Function Name: this.atStructure
      *  Description: This function traverses any multidimensional set and modifies the existing path structure (metaPath) to the specified desired path structure
