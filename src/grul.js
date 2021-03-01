@@ -205,6 +205,15 @@ const grul = new (function () {
      *  Description: This variable holds references to all objects that have been accessed via isCircular to remove __accessed__ key for later use
      */
     this.accessMap = {};
+    /*  Function Name: this.clearAccessMap
+     *  Description: This function clears an access map utilized by grul to halt at circular references.
+     */
+    this.clearAccessMap = function (){
+        Object.keys(this.accessMap).forEach(key=>{
+            delete this.accessMap[key].__accessed__;    //clean up temporary member on accessed object
+            delete this.accessMap[key];                 //clean up temporary member on access map
+        });
+    };
     /*  Function Name: this.isCircular
      *  Description: This function determines given a dataset whether or not that traversed path is circular in nature
      */
@@ -517,7 +526,7 @@ const grul = new (function () {
             newMeta = [metaTemplate];
         }
         
-        if(this.isCircular(data)){
+        if((!direct) && this.isCircular(data)){
             console.log("data traversal halted @ "+historicalLiteralPath.join("-"))
             return data;
         }
@@ -529,6 +538,9 @@ const grul = new (function () {
                     matchCount:this.clone(curMeta[i].matchCount),
                     hop:curMeta[i].hop
                 };
+                if(direct && historicalLiteralPath.length > metaPath[i].length){
+                    newMeta[i].matchCount = metaPath[i].length + 1;
+                }
                 if ( metaPath[i][newMeta[i].matchCount] !== undefined && historicalTypePath[historicalTypePath.length - 1].name === metaPath[i][newMeta[i].matchCount].name) {
                     newMeta[i].matchCount++;
                     matchExists = true;
@@ -604,10 +616,7 @@ const grul = new (function () {
             }
         }
         if(data === rootData){
-            Object.keys(this.accessMap).forEach(key=>{
-                delete this.accessMap[key].__accessed__;    //clean up temporary member on accessed object
-                delete this.accessMap[key];                 //clean up temporary member on access map
-            });
+            this.clearAccessMap();
         }
         return data;
     };
