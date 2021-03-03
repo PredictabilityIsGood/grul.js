@@ -526,10 +526,7 @@ const grul = new (function () {
             newMeta = [metaTemplate];
         }
         
-        if((!direct) && this.isCircular(data)){
-            console.log("data traversal halted @ "+historicalLiteralPath.join("-"))
-            return data;
-        }
+        
 
         if (historicalLiteralPath.length > 0) {
             let matchExists = false;
@@ -578,35 +575,35 @@ const grul = new (function () {
                 return false;
             }
         }
-        if (data === null) {
-            return;
-        }
-
-        
-        var nhtpath = historicalTypePath.slice(0);
-        nhtpath.push(data.constructor);
-        if (data.constructor === Array) {
-            for (let i = 0; i < data.length; i++) {
-                let nhlpath = this.clone(historicalLiteralPath);
-                nhlpath.push(i);
-                this.atPattern(data[i], metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
+        if (data !== null) {
+            if((!direct) && this.isCircular(data)){
+                console.log("data traversal halted @ "+historicalLiteralPath.join("-"))
+                return data;
             }
-        }
-        else if (data.constructor === Object || (typeof data == 'object' && data !== null) ) {
-            if( data.constructor.name in this.typeExtensions ){
-                this.typeExtensions[data.constructor.name].enumerators.forEach((enumerator)=>{
-                    enumerator(data, metaPath, logic, relativity, nhtpath, historicalLiteralPath, newMeta, rootData, direct);
-                });
-            }
-            else{
-                Object.keys(data).forEach((key) => {
+            var nhtpath = historicalTypePath.slice(0);
+            nhtpath.push(data.constructor);
+            if (data.constructor === Array) {
+                for (let i = 0; i < data.length; i++) {
                     let nhlpath = this.clone(historicalLiteralPath);
-                    nhlpath.push(key);
-                    this.atPattern( data[key], metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
-                });
+                    nhlpath.push(i);
+                    this.atPattern(data[i], metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
+                }
+            }
+            else if (data.constructor === Object || (typeof data == 'object' && data !== null) ) {
+                if( data.constructor.name in this.typeExtensions ){
+                    this.typeExtensions[data.constructor.name].enumerators.forEach((enumerator)=>{
+                        enumerator(data, metaPath, logic, relativity, nhtpath, historicalLiteralPath, newMeta, rootData, direct);
+                    });
+                }
+                else{
+                    Object.keys(data).forEach((key) => {
+                        let nhlpath = this.clone(historicalLiteralPath);
+                        nhlpath.push(key);
+                        this.atPattern( data[key], metaPath, logic, relativity, nhtpath, nhlpath, newMeta, rootData, direct);
+                    });
+                }
             }
         }
-
         for (let i = 0; i < metaPath.length; i++) {
             if (i in matched) {
                 continueTraversal = this.executeLogic(logic, "tail", i, aData, historicalTypePath, historicalLiteralPath, newMeta[i].hop, rootData);
